@@ -25,6 +25,23 @@ const distributionPipeline = (field) => [
   { $sort: { count: -1, label: 1 } },
 ];
 
+export const getDashboardSummary = asyncHandler(async (req, res) => {
+  const [properties, inquiries, siteVisits, testimonials] = await Promise.all([
+    Property.countDocuments(),
+    Inquiry.countDocuments(),
+    SiteVisit.countDocuments(),
+    Testimonial.countDocuments(),
+  ]);
+
+  res.status(200).json({
+    success: true,
+    properties,
+    inquiries,
+    siteVisits,
+    testimonials,
+  });
+});
+
 export const getDashboardAnalytics = asyncHandler(async (req, res) => {
   const [
     totalProperties,

@@ -1,5 +1,5 @@
 import express from 'express';
-import { createInquiry, deleteInquiry, getInquiries, updateInquiry } from '../controllers/inquiryController.js';
+import { createInquiry, deleteInquiry, getInquiries, getInquiryById, updateInquiry } from '../controllers/inquiryController.js';
 import { requireAdmin } from '../middleware/auth.js';
 import validate from '../middleware/validate.js';
 import { inquiryQueryValidator, inquiryValidator, updateInquiryValidator } from '../validators/leadValidators.js';
@@ -11,6 +11,10 @@ router
   .post(inquiryValidator, validate, createInquiry)
   .get(requireAdmin, inquiryQueryValidator, validate, getInquiries);
 
-router.route('/:id').put(requireAdmin, updateInquiryValidator, validate, updateInquiry).delete(requireAdmin, deleteInquiry);
+router
+  .route('/:id')
+  .get(requireAdmin, getInquiryById)
+  .put(requireAdmin, updateInquiryValidator, validate, updateInquiry)
+  .delete(requireAdmin, deleteInquiry);
 
 export default router;

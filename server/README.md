@@ -85,6 +85,8 @@ CLOUDINARY_API_SECRET=...
 
 ## Main Endpoints
 
+Full Postman-ready examples are in [`API.md`](./API.md).
+
 ### Auth
 
 ```text
@@ -99,10 +101,12 @@ GET  /api/auth/profile
 POST   /api/properties
 GET    /api/properties
 GET    /api/properties/featured
-GET    /api/properties/:slug
+GET    /api/properties/:id
 PUT    /api/properties/:id
 DELETE /api/properties/:id
 ```
+
+`GET /api/properties/:id` accepts either a MongoDB ObjectId or a slug.
 
 Property filtering supports:
 
@@ -122,11 +126,24 @@ p4-properties/properties
 ```text
 POST   /api/inquiries
 GET    /api/inquiries
+GET    /api/inquiries/:id
 PUT    /api/inquiries/:id
 DELETE /api/inquiries/:id
 ```
 
 Public users can create inquiries. Admins manage inquiries.
+
+### Site Visits
+
+```text
+POST   /api/site-visits
+GET    /api/site-visits
+GET    /api/site-visits/:id
+PUT    /api/site-visits/:id
+DELETE /api/site-visits/:id
+```
+
+Public users can request site visits. Admins manage site visits.
 
 ### Testimonials
 
@@ -134,6 +151,7 @@ Public users can create inquiries. Admins manage inquiries.
 POST   /api/testimonials
 GET    /api/testimonials
 GET    /api/testimonials/admin
+GET    /api/testimonials/:id
 PATCH  /api/testimonials/:id/approve
 PUT    /api/testimonials/:id
 DELETE /api/testimonials/:id

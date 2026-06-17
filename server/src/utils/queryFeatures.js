@@ -1,5 +1,6 @@
 export function buildPropertyQuery(query) {
   const filter = {};
+  const andConditions = [];
   const budgetRanges = {
     'Under Rs. 50 Lakhs': [0, 5000000],
     'Rs. 50 Lakhs - Rs. 1 Crore': [5000000, 10000000],
@@ -8,11 +9,18 @@ export function buildPropertyQuery(query) {
     'Above Rs. 5 Crores': [50000000, undefined],
   };
 
-  ['locality', 'status', 'areaUnit', 'category'].forEach((field) => {
+  ['status', 'areaUnit', 'category'].forEach((field) => {
     if (query[field]) filter[field] = query[field];
   });
 
-  const city = query.city || query.location;
+  if (query.locality) filter.locality = query.locality;
+  if (query.location) {
+    andConditions.push({
+      $or: [{ location: query.location }, { locality: query.location }, { city: query.location }],
+    });
+  }
+
+  const city = query.city;
   const propertyType = query.propertyType || query.type;
 
   if (city) filter.city = city;
@@ -38,14 +46,23 @@ export function buildPropertyQuery(query) {
     if (maxPrice !== undefined) filter.price.$lte = maxPrice;
   }
 
-  if (query.minLandArea || query.maxLandArea) {
-    filter.landArea = {};
-    if (query.minLandArea) filter.landArea.$gte = Number(query.minLandArea);
-    if (query.maxLandArea) filter.landArea.$lte = Number(query.maxLandArea);
+  const minArea = query.minArea || query.minLandArea;
+  const maxArea = query.maxArea || query.maxLandArea;
+
+  if (minArea || maxArea) {
+    const areaRange = {};
+    if (minArea) areaRange.$gte = Number(minArea);
+    if (maxArea) areaRange.$lte = Number(maxArea);
+    andConditions.push({ $or: [{ area: areaRange }, { landArea: areaRange }] });
   }
 
   if (query.amenity) filter.amenities = query.amenity;
-  if (query.search) filter.$text = { $search: query.search };
+  if (query.search) {
+    const search = new RegExp(query.search, 'i');
+    andConditions.push({ $or: [{ title: search }, { city: search }, { description: search }] });
+  }
+
+  if (andConditions.length) filter.$and = andConditions;
 
   return filter;
 }
@@ -63,7 +80,7 @@ export function getSort(sort) {
     oldest: 'createdAt',
     priceLow: 'price',
     priceHigh: '-price',
-    largestArea: '-landArea',
+    largestArea: '-area',
     featured: '-featured -createdAt',
   };
 

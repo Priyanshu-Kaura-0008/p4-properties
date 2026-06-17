@@ -4,13 +4,14 @@ import {
   createTestimonial,
   deleteTestimonial,
   getAllTestimonials,
+  getTestimonialById,
   getTestimonials,
   updateTestimonial,
 } from '../controllers/testimonialController.js';
 import { requireAdmin } from '../middleware/auth.js';
 import { setUploadFolder, uploadImagesToCloudinary, uploadSingleImage } from '../middleware/upload.js';
 import validate from '../middleware/validate.js';
-import { testimonialValidator } from '../validators/testimonialValidators.js';
+import { testimonialValidator, updateTestimonialValidator } from '../validators/testimonialValidators.js';
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router
     requireAdmin,
     setUploadFolder('p4-properties/testimonials'),
     uploadSingleImage,
-    testimonialValidator,
+    updateTestimonialValidator,
     validate,
     uploadImagesToCloudinary,
     createTestimonial,
@@ -32,6 +33,7 @@ router.patch('/:id/approve', requireAdmin, approveTestimonial);
 
 router
   .route('/:id')
+  .get(requireAdmin, getTestimonialById)
   .put(
     requireAdmin,
     setUploadFolder('p4-properties/testimonials'),

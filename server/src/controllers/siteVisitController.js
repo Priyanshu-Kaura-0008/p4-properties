@@ -80,6 +80,13 @@ export const getSiteVisits = asyncHandler(async (req, res) => {
   });
 });
 
+export const getSiteVisitById = asyncHandler(async (req, res) => {
+  const visit = await SiteVisit.findById(req.params.id).populate('property', propertyFields);
+  if (!visit) throw new ApiError('Site visit not found', 404);
+
+  res.status(200).json({ success: true, data: visit });
+});
+
 export const updateSiteVisit = asyncHandler(async (req, res) => {
   const allowedUpdates = [
     'property',

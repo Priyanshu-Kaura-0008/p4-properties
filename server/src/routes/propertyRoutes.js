@@ -5,7 +5,7 @@ import {
   getFeaturedProperties,
   getProperties,
   getPropertyById,
-  getPropertyBySlug,
+  getPropertyByIdOrSlug,
   updateProperty,
 } from '../controllers/propertyController.js';
 import { requireAdmin } from '../middleware/auth.js';
@@ -31,7 +31,7 @@ router
 router.get('/featured', getFeaturedProperties);
 router.get('/id/:id', requireAdmin, getPropertyById);
 
-router.get('/:slug', getPropertyBySlug);
+router.get('/:id', getPropertyByIdOrSlug);
 
 router
   .route('/:id')

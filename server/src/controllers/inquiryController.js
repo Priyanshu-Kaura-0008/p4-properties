@@ -66,6 +66,13 @@ export const getInquiries = asyncHandler(async (req, res) => {
   });
 });
 
+export const getInquiryById = asyncHandler(async (req, res) => {
+  const inquiry = await Inquiry.findById(req.params.id).populate('property', propertyFields);
+  if (!inquiry) throw new ApiError('Inquiry not found', 404);
+
+  res.status(200).json({ success: true, data: inquiry });
+});
+
 export const updateInquiry = asyncHandler(async (req, res) => {
   const allowedUpdates = ['name', 'phone', 'email', 'message', 'property', 'status', 'notes'];
   const updates = {};

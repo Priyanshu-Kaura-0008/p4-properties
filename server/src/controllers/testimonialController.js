@@ -6,6 +6,13 @@ import asyncHandler from '../utils/asyncHandler.js';
 
 const toBoolean = (value) => value === true || value === 'true';
 
+const getPagination = (query) => {
+  const page = Math.max(Number(query.page) || 1, 1);
+  const limit = Math.min(Math.max(Number(query.limit) || 12, 1), 100);
+  const skip = (page - 1) * limit;
+  return { page, limit, skip };
+};
+
 export const createTestimonial = asyncHandler(async (req, res) => {
   const testimonial = await Testimonial.create({
     ...req.body,
@@ -21,8 +28,13 @@ export const getTestimonials = asyncHandler(async (req, res) => {
   const filter = { approved: true };
   if (req.query.featured !== undefined) filter.featured = req.query.featured === 'true';
 
-  const testimonials = await Testimonial.find(filter).sort('-createdAt');
-  sendSuccess(res, { data: testimonials, meta: { count: testimonials.length } });
+  const { page, limit, skip } = getPagination(req.query);
+  const [testimonials, total] = await Promise.all([
+    Testimonial.find(filter).sort('-createdAt').skip(skip).limit(limit),
+    Testimonial.countDocuments(filter),
+  ]);
+
+  sendSuccess(res, { data: testimonials, meta: { count: testimonials.length, total, page, pages: Math.ceil(total / limit) } });
 });
 
 export const getAllTestimonials = asyncHandler(async (req, res) => {
@@ -30,8 +42,20 @@ export const getAllTestimonials = asyncHandler(async (req, res) => {
   if (req.query.approved !== undefined) filter.approved = req.query.approved === 'true';
   if (req.query.featured !== undefined) filter.featured = req.query.featured === 'true';
 
-  const testimonials = await Testimonial.find(filter).sort('-createdAt');
-  sendSuccess(res, { data: testimonials, meta: { count: testimonials.length } });
+  const { page, limit, skip } = getPagination(req.query);
+  const [testimonials, total] = await Promise.all([
+    Testimonial.find(filter).sort('-createdAt').skip(skip).limit(limit),
+    Testimonial.countDocuments(filter),
+  ]);
+
+  sendSuccess(res, { data: testimonials, meta: { count: testimonials.length, total, page, pages: Math.ceil(total / limit) } });
+});
+
+export const getTestimonialById = asyncHandler(async (req, res) => {
+  const testimonial = await Testimonial.findById(req.params.id);
+  if (!testimonial) throw new ApiError('Testimonial not found', 404);
+
+  sendSuccess(res, { data: testimonial });
 });
 
 export const updateTestimonial = asyncHandler(async (req, res) => {

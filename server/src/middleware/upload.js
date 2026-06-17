@@ -65,7 +65,12 @@ const uploadBuffer = (file, folder = 'p4-properties/properties') =>
       },
       (error, result) => {
         if (error) return reject(error);
-        resolve({ url: result.secure_url, publicId: result.public_id });
+        resolve({
+          url: result.secure_url,
+          publicId: result.public_id,
+          width: result.width,
+          height: result.height,
+        });
       },
     );
     stream.end(file.buffer);

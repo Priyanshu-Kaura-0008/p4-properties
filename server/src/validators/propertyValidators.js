@@ -4,6 +4,12 @@ const allowedPurposes = ['Buy', 'Sale', 'Sell', 'Rent'];
 const allowedCategories = ['Residential', 'Commercial'];
 const allowedStatuses = ['Available', 'Sold', 'Rented', 'Draft'];
 
+const requireAnyField = (fields, message) =>
+  body().custom((_, { req }) => {
+    if (fields.some((field) => req.body[field] !== undefined && req.body[field] !== '')) return true;
+    throw new Error(message);
+  });
+
 const parseJsonArray = (value) => {
   if (Array.isArray(value)) return value;
   if (typeof value !== 'string') throw new Error('must be an array or comma-separated string');
@@ -34,16 +40,20 @@ const requiredPropertyFields = [
   body('description').trim().notEmpty().withMessage('Description is required'),
   body('price').isNumeric().withMessage('Price must be numeric'),
   body('propertyType').trim().notEmpty().withMessage('Property type is required'),
-  body('purpose').isIn(allowedPurposes).withMessage('Invalid purpose'),
+  body('purpose').optional().isIn(allowedPurposes).withMessage('Invalid purpose'),
   body('category').optional().isIn(allowedCategories).withMessage('Invalid property category'),
   body('city').trim().notEmpty().withMessage('City is required'),
-  body('locality').trim().notEmpty().withMessage('Locality is required'),
-  body('address').trim().notEmpty().withMessage('Address is required'),
-  body('landArea').isNumeric().withMessage('Land area must be numeric'),
-  body('areaUnit').trim().notEmpty().withMessage('Area unit is required'),
+  requireAnyField(['location', 'locality', 'address'], 'Location is required'),
+  requireAnyField(['area', 'landArea'], 'Area is required'),
 ];
 
 const optionalPropertyFields = [
+  body('location').optional().trim().notEmpty().withMessage('Location cannot be empty'),
+  body('locality').optional().trim().notEmpty().withMessage('Locality cannot be empty'),
+  body('address').optional().trim().notEmpty().withMessage('Address cannot be empty'),
+  body('area').optional().isNumeric().withMessage('Area must be numeric'),
+  body('landArea').optional().isNumeric().withMessage('Land area must be numeric'),
+  body('areaUnit').optional().trim().notEmpty().withMessage('Area unit cannot be empty'),
   body('bedrooms').optional().isInt({ min: 0 }).withMessage('Bedrooms must be a positive integer'),
   body('bathrooms').optional().isInt({ min: 0 }).withMessage('Bathrooms must be a positive integer'),
   body('parking').optional().isInt({ min: 0 }).withMessage('Parking must be a positive integer'),
@@ -63,10 +73,6 @@ export const updatePropertyValidator = [
   body('purpose').optional().isIn(allowedPurposes).withMessage('Invalid purpose'),
   body('category').optional().isIn(allowedCategories).withMessage('Invalid property category'),
   body('city').optional().trim().notEmpty().withMessage('City cannot be empty'),
-  body('locality').optional().trim().notEmpty().withMessage('Locality cannot be empty'),
-  body('address').optional().trim().notEmpty().withMessage('Address cannot be empty'),
-  body('landArea').optional().isNumeric().withMessage('Land area must be numeric'),
-  body('areaUnit').optional().trim().notEmpty().withMessage('Area unit cannot be empty'),
   ...optionalPropertyFields,
 ];
 
@@ -83,6 +89,13 @@ export const propertyQueryValidator = [
   query('budget').optional().trim().notEmpty().withMessage('Budget cannot be empty'),
   query('minPrice').optional().isNumeric().withMessage('Minimum price must be numeric'),
   query('maxPrice').optional().isNumeric().withMessage('Maximum price must be numeric'),
+  query('minArea').optional().isNumeric().withMessage('Minimum area must be numeric'),
+  query('maxArea').optional().isNumeric().withMessage('Maximum area must be numeric'),
   query('minLandArea').optional().isNumeric().withMessage('Minimum land area must be numeric'),
   query('maxLandArea').optional().isNumeric().withMessage('Maximum land area must be numeric'),
+  query('search').optional().trim().notEmpty().withMessage('Search cannot be empty'),
+  query('sort')
+    .optional()
+    .isIn(['latest', 'oldest', 'priceLow', 'priceHigh', 'largestArea', 'featured'])
+    .withMessage('Invalid sort value'),
 ];

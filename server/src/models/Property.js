@@ -5,6 +5,8 @@ const imageSchema = new mongoose.Schema(
   {
     url: { type: String, required: true },
     publicId: { type: String, required: true },
+    width: { type: Number },
+    height: { type: Number },
   },
   { _id: false },
 );
@@ -16,13 +18,15 @@ const propertySchema = new mongoose.Schema(
     description: { type: String, required: true, trim: true },
     price: { type: Number, required: true, min: 0, index: true },
     propertyType: { type: String, required: true, trim: true, index: true },
-    purpose: { type: String, required: true, enum: ['Buy', 'Sale', 'Sell', 'Rent'], index: true },
+    purpose: { type: String, enum: ['Buy', 'Sale', 'Sell', 'Rent'], default: 'Sale', index: true },
     category: { type: String, enum: ['Residential', 'Commercial'], index: true },
     city: { type: String, required: true, trim: true, index: true },
-    locality: { type: String, required: true, trim: true, index: true },
-    address: { type: String, required: true, trim: true },
-    landArea: { type: Number, required: true, min: 0, index: true },
-    areaUnit: { type: String, required: true, trim: true },
+    location: { type: String, trim: true, index: true },
+    locality: { type: String, trim: true, index: true },
+    address: { type: String, trim: true },
+    area: { type: Number, min: 0, index: true },
+    landArea: { type: Number, min: 0, index: true },
+    areaUnit: { type: String, default: 'sq ft', trim: true },
     bedrooms: { type: Number, default: 0, min: 0 },
     bathrooms: { type: Number, default: 0, min: 0 },
     parking: { type: Number, default: 0, min: 0 },
@@ -47,12 +51,19 @@ propertySchema.index({
   propertyType: 'text',
   category: 'text',
   city: 'text',
+  location: 'text',
   locality: 'text',
   address: 'text',
   amenities: 'text',
 });
 
 propertySchema.pre('validate', function createSlug(next) {
+  if (!this.location && this.locality) this.location = this.locality;
+  if (!this.locality && this.location) this.locality = this.location;
+  if (!this.address && this.location) this.address = this.location;
+  if (this.area === undefined && this.landArea !== undefined) this.area = this.landArea;
+  if (this.landArea === undefined && this.area !== undefined) this.landArea = this.area;
+
   if (this.isModified('title') || !this.slug) {
     const baseSlug = slugify(this.title, { lower: true, strict: true });
     const suffix = this._id ? `-${this._id.toString().slice(-6)}` : '';

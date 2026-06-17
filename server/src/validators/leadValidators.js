@@ -23,6 +23,8 @@ export const inquiryQueryValidator = [
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   query('status').optional().isIn(['pending', 'contacted', 'closed']).withMessage('Invalid inquiry status'),
   query('property').optional().isMongoId().withMessage('Invalid property ID'),
+  query('search').optional().trim().notEmpty().withMessage('Search cannot be empty'),
+  query('sort').optional().isIn(['latest', 'oldest', 'status']).withMessage('Invalid sort value'),
 ];
 
 export const siteVisitValidator = [
@@ -80,6 +82,8 @@ export const siteVisitQueryValidator = [
   query('propertyType').optional().trim(),
   query('fromDate').optional().isISO8601().withMessage('fromDate must be a valid date'),
   query('toDate').optional().isISO8601().withMessage('toDate must be a valid date'),
+  query('search').optional().trim().notEmpty().withMessage('Search cannot be empty'),
+  query('sort').optional().isIn(['latest', 'oldest', 'dateAsc', 'dateDesc', 'status']).withMessage('Invalid sort value'),
 ];
 
 export const statusValidator = (allowed) => [

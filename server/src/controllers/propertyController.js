@@ -43,13 +43,15 @@ const buildPropertyPayload = (body, uploadedImages = [], userId) => ({
   description: body.description,
   price: toNumber(body.price),
   propertyType: body.propertyType,
-  purpose: body.purpose,
+  purpose: body.purpose || 'Sale',
   category: body.category,
   city: body.city,
-  locality: body.locality,
-  address: body.address,
-  landArea: toNumber(body.landArea),
-  areaUnit: body.areaUnit,
+  location: body.location || body.locality || body.address,
+  locality: body.locality || body.location,
+  address: body.address || body.location || body.locality,
+  area: toNumber(body.area ?? body.landArea),
+  landArea: toNumber(body.landArea ?? body.area),
+  areaUnit: body.areaUnit || 'sq ft',
   bedrooms: toNumber(body.bedrooms),
   bathrooms: toNumber(body.bathrooms),
   parking: toNumber(body.parking),
@@ -97,20 +99,23 @@ export const getFeaturedProperties = asyncHandler(async (req, res) => {
   });
 });
 
-export const getPropertyBySlug = asyncHandler(async (req, res) => {
-  const property = await Property.findOneAndUpdate(
-    { slug: req.params.slug },
-    { $inc: { views: 1 } },
-    { new: true },
-  ).populate('createdBy', 'name email');
-
+export const getPropertyById = asyncHandler(async (req, res) => {
+  const property = await Property.findById(req.params.id).populate('createdBy', 'name email');
   if (!property) throw new ApiError('Property not found', 404);
 
   res.status(200).json({ success: true, data: property });
 });
 
-export const getPropertyById = asyncHandler(async (req, res) => {
-  const property = await Property.findById(req.params.id).populate('createdBy', 'name email');
+export const getPropertyByIdOrSlug = asyncHandler(async (req, res) => {
+  const idOrSlug = req.params.id;
+  const isObjectId = /^[0-9a-fA-F]{24}$/.test(idOrSlug);
+  const query = isObjectId ? { _id: idOrSlug } : { slug: idOrSlug };
+
+  const property = await Property.findOneAndUpdate(query, { $inc: { views: 1 } }, { new: true }).populate(
+    'createdBy',
+    'name email',
+  );
+
   if (!property) throw new ApiError('Property not found', 404);
 
   res.status(200).json({ success: true, data: property });
@@ -128,12 +133,13 @@ export const updateProperty = asyncHandler(async (req, res) => {
     'purpose',
     'category',
     'city',
+    'location',
     'locality',
     'address',
     'areaUnit',
     'status',
   ];
-  const numberFields = ['price', 'landArea', 'bedrooms', 'bathrooms', 'parking'];
+  const numberFields = ['price', 'area', 'landArea', 'bedrooms', 'bathrooms', 'parking'];
 
   stringFields.forEach((field) => {
     if (req.body[field] !== undefined) updates[field] = req.body[field];
@@ -146,6 +152,12 @@ export const updateProperty = asyncHandler(async (req, res) => {
   numberFields.forEach((field) => {
     if (req.body[field] !== undefined) updates[field] = toNumber(req.body[field]);
   });
+
+  if (updates.location && updates.locality === undefined) updates.locality = updates.location;
+  if (updates.locality && updates.location === undefined) updates.location = updates.locality;
+  if (updates.location && updates.address === undefined) updates.address = updates.location;
+  if (updates.area !== undefined && updates.landArea === undefined) updates.landArea = updates.area;
+  if (updates.landArea !== undefined && updates.area === undefined) updates.area = updates.landArea;
 
   if (req.body.featured !== undefined) updates.featured = toBoolean(req.body.featured);
   if (req.body.amenities !== undefined) updates.amenities = normalizeArray(req.body.amenities);
