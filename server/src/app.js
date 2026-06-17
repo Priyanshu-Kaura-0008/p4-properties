@@ -79,7 +79,7 @@ app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/site-visits', siteVisitRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/settings', settingRoutes);
-if (env.NODE_ENV === 'development') app.use('/api/test', testRoutes);
+app.use('/api/test', testRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/dashboard', analyticsRoutes);
 
