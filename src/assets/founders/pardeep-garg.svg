@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Pardeep Garg portrait placeholder</title>
+  <desc id="desc">Premium founder portrait placeholder for P4 Properties.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fff8e8"/>
+      <stop offset="1" stop-color="#24211d"/>
+    </linearGradient>
+    <linearGradient id="suit" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#363636"/>
+      <stop offset="1" stop-color="#101010"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="256" cy="202" r="92" fill="#b8794f"/>
+  <path fill="#2c2019" d="M168 188c10-62 45-103 95-103 52 0 83 35 90 92-44-20-112-19-185 11Z"/>
+  <path fill="#ffffff" d="M208 318h96l-48 84-48-84Z"/>
+  <path fill="url(#suit)" d="M92 512c13-116 79-178 164-178s151 62 164 178H92Z"/>
+  <path fill="#d4af37" d="M232 372h48l-24 40-24-40Z"/>
+  <circle cx="256" cy="256" r="238" fill="none" stroke="#d4af37" stroke-width="10" opacity=".65"/>
+</svg>

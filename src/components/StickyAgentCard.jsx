@@ -1,0 +1,49 @@
+import { motion } from 'framer-motion';
+import { FaEnvelope, FaPhoneAlt, FaUserTie, FaWhatsapp } from 'react-icons/fa';
+
+export default function StickyAgentCard({ propertyTitle }) {
+  return (
+    <motion.aside
+      className="sticky top-24 rounded-md border border-ink/10 bg-white p-6 shadow-premium"
+      initial={{ opacity: 0, x: 24 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6 }}
+    >
+      <div className="flex items-center gap-4 border-b border-ink/10 pb-6">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-ivory text-3xl text-gold">
+          <FaUserTie aria-hidden="true" />
+        </div>
+        <div>
+          <h2 className="font-display text-2xl font-bold text-ink">P4 Properties Team</h2>
+          <p className="mt-1 text-sm font-semibold text-muted">Private property advisor</p>
+        </div>
+      </div>
+      <div className="grid gap-3 py-6 text-sm font-semibold text-muted">
+        <p className="flex items-center gap-3">
+          <FaPhoneAlt className="text-gold" aria-hidden="true" />
+          +91 81950 02006
+        </p>
+        <p className="flex items-center gap-3">
+          <FaEnvelope className="text-gold" aria-hidden="true" />
+          info@p4properties.com
+        </p>
+      </div>
+      <div className="grid gap-3">
+        <a href="#site-visit" className="bg-gold px-5 py-3 text-center text-sm font-extrabold uppercase tracking-[0.12em] text-night transition-colors hover:bg-night hover:text-white">
+          Schedule Site Visit
+        </a>
+        <a
+          href={`https://wa.me/918195002006?text=I%20am%20interested%20in%20${encodeURIComponent(propertyTitle)}`}
+          className="inline-flex items-center justify-center gap-2 border border-ink/15 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-ink transition-colors hover:border-gold hover:text-gold"
+        >
+          <FaWhatsapp aria-hidden="true" />
+          WhatsApp Inquiry
+        </a>
+        <a href="tel:+918195002006" className="border border-ink/15 px-5 py-3 text-center text-sm font-extrabold uppercase tracking-[0.12em] text-ink transition-colors hover:border-gold hover:text-gold">
+          Call Now
+        </a>
+      </div>
+    </motion.aside>
+  );
+}

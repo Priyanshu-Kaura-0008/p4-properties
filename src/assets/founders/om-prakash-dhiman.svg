@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Om Prakash Dhiman portrait placeholder</title>
+  <desc id="desc">Premium founder portrait placeholder for P4 Properties.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f2eadb"/>
+      <stop offset="1" stop-color="#161616"/>
+    </linearGradient>
+    <linearGradient id="suit" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#1e2a3a"/>
+      <stop offset="1" stop-color="#08101c"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="256" cy="205" r="94" fill="#a96947"/>
+  <path fill="#e8e2d6" d="M168 191c13-63 45-100 90-100 52 0 83 40 87 98-48-29-111-27-177 2Z"/>
+  <path fill="#ffffff" d="M210 320h92l-46 82-46-82Z"/>
+  <path fill="url(#suit)" d="M96 512c12-114 78-176 160-176s148 62 160 176H96Z"/>
+  <path fill="#d4af37" d="M242 384h28l9 128h-46l9-128Z"/>
+  <circle cx="256" cy="256" r="238" fill="none" stroke="#d4af37" stroke-width="10" opacity=".65"/>
+</svg>

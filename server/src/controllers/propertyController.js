@@ -1,0 +1,178 @@
+import cloudinary from '../config/cloudinary.js';
+import Property from '../models/Property.js';
+import ApiError from '../utils/apiError.js';
+import asyncHandler from '../utils/asyncHandler.js';
+import { buildPropertyQuery, getPagination, getSort } from '../utils/queryFeatures.js';
+import slugify from 'slugify';
+
+const normalizeArray = (value) => {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (typeof value !== 'string') return [];
+
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) return parsed.map((item) => String(item).trim()).filter(Boolean);
+  } catch {
+    // Fall through to comma-separated parsing.
+  }
+
+  return value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+};
+
+const toNumber = (value, fallback = 0) => {
+  if (value === undefined || value === null || value === '') return fallback;
+  return Number(value);
+};
+
+const toBoolean = (value) => value === true || value === 'true';
+
+const deleteCloudinaryImages = async (images = []) => {
+  await Promise.all(
+    images
+      .filter((image) => image.publicId)
+      .map((image) => cloudinary.uploader.destroy(image.publicId).catch(() => null)),
+  );
+};
+
+const buildPropertyPayload = (body, uploadedImages = [], userId) => ({
+  title: body.title,
+  description: body.description,
+  price: toNumber(body.price),
+  propertyType: body.propertyType,
+  purpose: body.purpose,
+  category: body.category,
+  city: body.city,
+  locality: body.locality,
+  address: body.address,
+  landArea: toNumber(body.landArea),
+  areaUnit: body.areaUnit,
+  bedrooms: toNumber(body.bedrooms),
+  bathrooms: toNumber(body.bathrooms),
+  parking: toNumber(body.parking),
+  featured: toBoolean(body.featured),
+  status: body.status || 'Available',
+  amenities: normalizeArray(body.amenities),
+  images: uploadedImages,
+  createdBy: userId,
+});
+
+export const createProperty = asyncHandler(async (req, res) => {
+  const property = await Property.create(buildPropertyPayload(req.body, req.uploadedImages || [], req.user._id));
+
+  res.status(201).json({ success: true, data: property });
+});
+
+export const getProperties = asyncHandler(async (req, res) => {
+  const filter = buildPropertyQuery(req.query);
+  const { page, limit, skip } = getPagination(req.query);
+  const sort = getSort(req.query.sort);
+
+  const [properties, total] = await Promise.all([
+    Property.find(filter).sort(sort).skip(skip).limit(limit).populate('createdBy', 'name email'),
+    Property.countDocuments(filter),
+  ]);
+
+  res.status(200).json({
+    success: true,
+    count: properties.length,
+    total,
+    page,
+    pages: Math.ceil(total / limit),
+    data: properties,
+  });
+});
+
+export const getFeaturedProperties = asyncHandler(async (req, res) => {
+  const limit = Math.min(Math.max(Number(req.query.limit) || 8, 1), 24);
+  const properties = await Property.find({ featured: true, status: 'Available' }).sort('-createdAt').limit(limit);
+
+  res.status(200).json({
+    success: true,
+    count: properties.length,
+    data: properties,
+  });
+});
+
+export const getPropertyBySlug = asyncHandler(async (req, res) => {
+  const property = await Property.findOneAndUpdate(
+    { slug: req.params.slug },
+    { $inc: { views: 1 } },
+    { new: true },
+  ).populate('createdBy', 'name email');
+
+  if (!property) throw new ApiError('Property not found', 404);
+
+  res.status(200).json({ success: true, data: property });
+});
+
+export const getPropertyById = asyncHandler(async (req, res) => {
+  const property = await Property.findById(req.params.id).populate('createdBy', 'name email');
+  if (!property) throw new ApiError('Property not found', 404);
+
+  res.status(200).json({ success: true, data: property });
+});
+
+export const updateProperty = asyncHandler(async (req, res) => {
+  const property = await Property.findById(req.params.id);
+  if (!property) throw new ApiError('Property not found', 404);
+
+  const updates = {};
+  const stringFields = [
+    'title',
+    'description',
+    'propertyType',
+    'purpose',
+    'category',
+    'city',
+    'locality',
+    'address',
+    'areaUnit',
+    'status',
+  ];
+  const numberFields = ['price', 'landArea', 'bedrooms', 'bathrooms', 'parking'];
+
+  stringFields.forEach((field) => {
+    if (req.body[field] !== undefined) updates[field] = req.body[field];
+  });
+
+  if (updates.title) {
+    updates.slug = `${slugify(updates.title, { lower: true, strict: true })}-${property._id.toString().slice(-6)}`;
+  }
+
+  numberFields.forEach((field) => {
+    if (req.body[field] !== undefined) updates[field] = toNumber(req.body[field]);
+  });
+
+  if (req.body.featured !== undefined) updates.featured = toBoolean(req.body.featured);
+  if (req.body.amenities !== undefined) updates.amenities = normalizeArray(req.body.amenities);
+
+  if (req.body.removeImagePublicIds) {
+    const publicIdsToRemove = normalizeArray(req.body.removeImagePublicIds);
+    const imagesToRemove = property.images.filter((image) => publicIdsToRemove.includes(image.publicId));
+
+    await deleteCloudinaryImages(imagesToRemove);
+    updates.images = property.images.filter((image) => !publicIdsToRemove.includes(image.publicId));
+  }
+
+  if (req.uploadedImages?.length) {
+    updates.images = [...(updates.images || property.images), ...req.uploadedImages];
+  }
+
+  const updated = await Property.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+
+  res.status(200).json({ success: true, data: updated });
+});
+
+export const deleteProperty = asyncHandler(async (req, res) => {
+  const property = await Property.findById(req.params.id);
+  if (!property) throw new ApiError('Property not found', 404);
+
+  await deleteCloudinaryImages(property.images);
+  await property.deleteOne();
+
+  res.status(200).json({ success: true, message: 'Property deleted successfully' });
+});

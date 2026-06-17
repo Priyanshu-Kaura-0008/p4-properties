@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Pardeep Aggarwal portrait placeholder</title>
+  <desc id="desc">Premium founder portrait placeholder for P4 Properties.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f7f0df"/>
+      <stop offset="1" stop-color="#1b1714"/>
+    </linearGradient>
+    <linearGradient id="suit" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#2f2f2f"/>
+      <stop offset="1" stop-color="#090909"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="256" cy="204" r="94" fill="#b97954"/>
+  <path fill="#2a1d16" d="M166 192c8-64 43-102 93-102 55 0 88 40 91 96-43-25-119-24-184 6Z"/>
+  <path fill="#ffffff" d="M210 319h92l-46 84-46-84Z"/>
+  <path fill="url(#suit)" d="M94 512c12-116 78-178 162-178s150 62 162 178H94Z"/>
+  <path fill="#d4af37" d="M230 374h52l-26 40-26-40Z"/>
+  <circle cx="256" cy="256" r="238" fill="none" stroke="#d4af37" stroke-width="10" opacity=".65"/>
+</svg>

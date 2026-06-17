@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Priyanshu Kaura portrait placeholder</title>
+  <desc id="desc">Premium founder portrait placeholder for P4 Properties.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f6efe0"/>
+      <stop offset="1" stop-color="#1a1a1a"/>
+    </linearGradient>
+    <linearGradient id="suit" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#2a2a2a"/>
+      <stop offset="1" stop-color="#080808"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="256" cy="206" r="96" fill="#c99668"/>
+  <path fill="#19110d" d="M160 194c6-72 48-114 105-114 58 0 96 44 99 105-31-23-63-31-101-31-42 0-74 11-103 40Z"/>
+  <path fill="#ffffff" d="M212 320h88l-44 78-44-78Z"/>
+  <path fill="url(#suit)" d="M96 512c12-116 78-178 160-178s148 62 160 178H96Z"/>
+  <path fill="#d4af37" d="M244 388h24l11 124h-46l11-124Z"/>
+  <circle cx="256" cy="256" r="238" fill="none" stroke="#d4af37" stroke-width="10" opacity=".65"/>
+</svg>
