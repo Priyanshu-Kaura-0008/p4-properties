@@ -21,14 +21,12 @@ const blogSchema = new mongoose.Schema(
 
 blogSchema.index({ title: 'text', excerpt: 'text', content: 'text', category: 'text', tags: 'text' });
 
-blogSchema.pre('validate', function createSlug(next) {
+blogSchema.pre('validate', function createSlug() {
   if (this.isModified('title') || !this.slug) {
     const baseSlug = slugify(this.title, { lower: true, strict: true });
     const suffix = this._id ? `-${this._id.toString().slice(-6)}` : '';
     this.slug = `${baseSlug}${suffix}`;
   }
-
-  next();
 });
 
 export default mongoose.model('Blog', blogSchema);

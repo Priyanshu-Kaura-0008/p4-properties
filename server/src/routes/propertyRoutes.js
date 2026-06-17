@@ -29,9 +29,10 @@ router
   .get(propertyQueryValidator, validate, getProperties);
 
 router.get('/featured', getFeaturedProperties);
+router.get('/search', propertyQueryValidator, validate, getProperties);
 router.get('/id/:id', requireAdmin, getPropertyById);
 
-router.get('/:id', getPropertyByIdOrSlug);
+router.get('/:slug', getPropertyByIdOrSlug);
 
 router
   .route('/:id')

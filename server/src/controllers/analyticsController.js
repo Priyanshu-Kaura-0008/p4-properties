@@ -6,7 +6,7 @@ import Testimonial from '../models/Testimonial.js';
 import { sendSuccess } from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
-const recentPropertyFields = 'title slug city locality price purpose propertyType';
+const recentPropertyFields = 'title slug city location locality price purpose propertyType featured mainImage images createdAt';
 
 const distributionPipeline = (field) => [
   {
@@ -26,8 +26,10 @@ const distributionPipeline = (field) => [
 ];
 
 export const getDashboardSummary = asyncHandler(async (req, res) => {
-  const [properties, inquiries, siteVisits, testimonials] = await Promise.all([
+  const [properties, featuredProperties, latestProperties, inquiries, siteVisits, testimonials] = await Promise.all([
     Property.countDocuments(),
+    Property.countDocuments({ featured: true }),
+    Property.find().sort('-createdAt').limit(6).select(recentPropertyFields),
     Inquiry.countDocuments(),
     SiteVisit.countDocuments(),
     Testimonial.countDocuments(),
@@ -36,6 +38,8 @@ export const getDashboardSummary = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     properties,
+    featuredProperties,
+    latestProperties,
     inquiries,
     siteVisits,
     testimonials,
@@ -54,6 +58,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     blogsCount,
     recentInquiries,
     recentSiteVisits,
+    latestProperties,
     propertyDistributionByType,
     propertyDistributionByCity,
   ] = await Promise.all([
@@ -67,6 +72,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     Blog.countDocuments(),
     Inquiry.find().sort('-createdAt').limit(6).populate('property', recentPropertyFields),
     SiteVisit.find().sort('-createdAt').limit(6).populate('property', recentPropertyFields),
+    Property.find().sort('-createdAt').limit(6).select(recentPropertyFields),
     Property.aggregate(distributionPipeline('propertyType')),
     Property.aggregate(distributionPipeline('city')),
   ]);
@@ -83,6 +89,7 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
       blogsCount,
       recentInquiries,
       recentSiteVisits,
+      latestProperties,
       propertyDistributionByType,
       propertyDistributionByCity,
     },

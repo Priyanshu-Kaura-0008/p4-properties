@@ -95,10 +95,10 @@ export const updateBlog = asyncHandler(async (req, res) => {
     updates.coverImage = req.uploadedImages[0];
   }
 
-  const updated = await Blog.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true }).populate(
-    'author',
-    'name email',
-  );
+  const updated = await Blog.findByIdAndUpdate(req.params.id, updates, {
+    returnDocument: 'after',
+    runValidators: true,
+  }).populate('author', 'name email');
 
   sendSuccess(res, { data: updated, message: 'Blog updated successfully' });
 });

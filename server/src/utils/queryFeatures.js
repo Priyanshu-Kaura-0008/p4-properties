@@ -26,7 +26,10 @@ export function buildPropertyQuery(query) {
   if (city) filter.city = city;
   if (propertyType) filter.propertyType = propertyType;
   if (query.purpose) {
-    filter.purpose = query.purpose === 'Buy' ? { $in: ['Buy', 'Sale', 'Sell'] } : query.purpose;
+    const purpose = String(query.purpose).toLowerCase();
+    if (purpose === 'buy') filter.purpose = { $in: ['Buy', 'Sale', 'Sell'] };
+    else if (purpose === 'rent') filter.purpose = 'Rent';
+    else filter.purpose = query.purpose;
   }
 
   if (query.featured !== undefined) filter.featured = query.featured === 'true';

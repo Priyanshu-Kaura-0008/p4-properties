@@ -1,14 +1,8 @@
 import { body, query } from 'express-validator';
 
-const allowedPurposes = ['Buy', 'Sale', 'Sell', 'Rent'];
+const allowedPurposes = ['buy', 'rent', 'Buy', 'Rent', 'Sale', 'Sell'];
 const allowedCategories = ['Residential', 'Commercial'];
 const allowedStatuses = ['Available', 'Sold', 'Rented', 'Draft'];
-
-const requireAnyField = (fields, message) =>
-  body().custom((_, { req }) => {
-    if (fields.some((field) => req.body[field] !== undefined && req.body[field] !== '')) return true;
-    throw new Error(message);
-  });
 
 const parseJsonArray = (value) => {
   if (Array.isArray(value)) return value;
@@ -37,14 +31,13 @@ const arrayLikeValidator = (field) =>
 
 const requiredPropertyFields = [
   body('title').trim().notEmpty().withMessage('Title is required'),
-  body('description').trim().notEmpty().withMessage('Description is required'),
+  body('description').optional({ checkFalsy: true }).trim(),
   body('price').isNumeric().withMessage('Price must be numeric'),
   body('propertyType').trim().notEmpty().withMessage('Property type is required'),
   body('purpose').optional().isIn(allowedPurposes).withMessage('Invalid purpose'),
   body('category').optional().isIn(allowedCategories).withMessage('Invalid property category'),
-  body('city').trim().notEmpty().withMessage('City is required'),
-  requireAnyField(['location', 'locality', 'address'], 'Location is required'),
-  requireAnyField(['area', 'landArea'], 'Area is required'),
+  body('city').optional({ checkFalsy: true }).trim(),
+  body('location').trim().notEmpty().withMessage('Location is required'),
 ];
 
 const optionalPropertyFields = [
@@ -59,6 +52,7 @@ const optionalPropertyFields = [
   body('parking').optional().isInt({ min: 0 }).withMessage('Parking must be a positive integer'),
   body('featured').optional().isBoolean().withMessage('Featured must be true or false'),
   body('status').optional().isIn(allowedStatuses).withMessage('Invalid property status'),
+  body('googleMapLink').optional({ checkFalsy: true }).trim().isURL().withMessage('Google Map link must be a URL'),
   arrayLikeValidator('amenities'),
   arrayLikeValidator('removeImagePublicIds'),
 ];

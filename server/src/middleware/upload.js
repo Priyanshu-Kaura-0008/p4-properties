@@ -17,7 +17,11 @@ const propertyImageUpload = multer({
   storage: multer.memoryStorage(),
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024, files: 12 },
-}).array('images', 12);
+}).fields([
+  { name: 'mainImage', maxCount: 1 },
+  { name: 'galleryImages', maxCount: 11 },
+  { name: 'images', maxCount: 12 },
+]);
 
 const singleImageUpload = multer({
   storage: multer.memoryStorage(),
@@ -52,7 +56,10 @@ export const setUploadFolder = (folder) => (req, res, next) => {
   next();
 };
 
-export const uploadPropertyImages = runUpload(propertyImageUpload, 'Upload property images using the images field');
+export const uploadPropertyImages = runUpload(
+  propertyImageUpload,
+  'Upload property images using mainImage, galleryImages, or images fields',
+);
 export const uploadSingleImage = runUpload(singleImageUpload, 'Upload a single image using the image field');
 
 const uploadBuffer = (file, folder = 'p4-properties/properties') =>
@@ -77,13 +84,31 @@ const uploadBuffer = (file, folder = 'p4-properties/properties') =>
   });
 
 export const uploadImagesToCloudinary = asyncHandler(async (req, res, next) => {
-  const files = req.files?.length ? req.files : req.file ? [req.file] : [];
+  const fileGroups = Array.isArray(req.files)
+    ? { images: req.files }
+    : {
+        mainImage: req.files?.mainImage || [],
+        galleryImages: req.files?.galleryImages || [],
+        images: req.files?.images || [],
+      };
+  const files = req.file
+    ? [req.file]
+    : [...fileGroups.mainImage, ...fileGroups.galleryImages, ...fileGroups.images];
 
   if (!files.length) {
     req.uploadedImages = [];
+    req.uploadedMainImage = undefined;
+    req.uploadedGalleryImages = [];
     return next();
   }
 
-  req.uploadedImages = await Promise.all(files.map((file) => uploadBuffer(file, req.cloudinaryFolder)));
+  const uploaded = await Promise.all(files.map((file) => uploadBuffer(file, req.cloudinaryFolder)));
+  const mainImageCount = fileGroups.mainImage.length;
+  const galleryImageCount = fileGroups.galleryImages.length;
+  const legacyImageStart = mainImageCount + galleryImageCount;
+
+  req.uploadedMainImage = mainImageCount ? uploaded[0] : undefined;
+  req.uploadedGalleryImages = galleryImageCount ? uploaded.slice(mainImageCount, legacyImageStart) : [];
+  req.uploadedImages = uploaded;
   next();
 });

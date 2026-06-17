@@ -30,6 +30,16 @@ const toNumber = (value, fallback = 0) => {
 
 const toBoolean = (value) => value === true || value === 'true';
 
+const normalizePurpose = (value) => {
+  if (!value) return 'Buy';
+  const normalized = String(value).trim().toLowerCase();
+  if (normalized === 'buy') return 'Buy';
+  if (normalized === 'rent') return 'Rent';
+  if (normalized === 'sale') return 'Sale';
+  if (normalized === 'sell') return 'Sell';
+  return value;
+};
+
 const deleteCloudinaryImages = async (images = []) => {
   await Promise.all(
     images
@@ -38,12 +48,23 @@ const deleteCloudinaryImages = async (images = []) => {
   );
 };
 
-const buildPropertyPayload = (body, uploadedImages = [], userId) => ({
+const buildImagePayload = (uploadedImages = [], uploadedMainImage, uploadedGalleryImages = []) => {
+  const mainImage = uploadedMainImage || uploadedImages[0];
+  const galleryImages = uploadedGalleryImages.length ? uploadedGalleryImages : uploadedImages.slice(mainImage ? 1 : 0);
+
+  return {
+    mainImage,
+    galleryImages,
+    images: mainImage ? [mainImage, ...galleryImages] : galleryImages,
+  };
+};
+
+const buildPropertyPayload = (body, uploadedImages = [], userId, uploadedMainImage, uploadedGalleryImages = []) => ({
   title: body.title,
-  description: body.description,
+  description: body.description || '',
   price: toNumber(body.price),
   propertyType: body.propertyType,
-  purpose: body.purpose || 'Sale',
+  purpose: normalizePurpose(body.purpose),
   category: body.category,
   city: body.city,
   location: body.location || body.locality || body.address,
@@ -58,12 +79,21 @@ const buildPropertyPayload = (body, uploadedImages = [], userId) => ({
   featured: toBoolean(body.featured),
   status: body.status || 'Available',
   amenities: normalizeArray(body.amenities),
-  images: uploadedImages,
+  googleMapLink: body.googleMapLink,
+  ...buildImagePayload(uploadedImages, uploadedMainImage, uploadedGalleryImages),
   createdBy: userId,
 });
 
 export const createProperty = asyncHandler(async (req, res) => {
-  const property = await Property.create(buildPropertyPayload(req.body, req.uploadedImages || [], req.user._id));
+  const property = await Property.create(
+    buildPropertyPayload(
+      req.body,
+      req.uploadedImages || [],
+      req.user._id,
+      req.uploadedMainImage,
+      req.uploadedGalleryImages || [],
+    ),
+  );
 
   res.status(201).json({ success: true, data: property });
 });
@@ -107,11 +137,11 @@ export const getPropertyById = asyncHandler(async (req, res) => {
 });
 
 export const getPropertyByIdOrSlug = asyncHandler(async (req, res) => {
-  const idOrSlug = req.params.id;
+  const idOrSlug = req.params.slug || req.params.id;
   const isObjectId = /^[0-9a-fA-F]{24}$/.test(idOrSlug);
   const query = isObjectId ? { _id: idOrSlug } : { slug: idOrSlug };
 
-  const property = await Property.findOneAndUpdate(query, { $inc: { views: 1 } }, { new: true }).populate(
+  const property = await Property.findOneAndUpdate(query, { $inc: { views: 1 } }, { returnDocument: 'after' }).populate(
     'createdBy',
     'name email',
   );
@@ -138,6 +168,7 @@ export const updateProperty = asyncHandler(async (req, res) => {
     'address',
     'areaUnit',
     'status',
+    'googleMapLink',
   ];
   const numberFields = ['price', 'area', 'landArea', 'bedrooms', 'bathrooms', 'parking'];
 
@@ -148,6 +179,8 @@ export const updateProperty = asyncHandler(async (req, res) => {
   if (updates.title) {
     updates.slug = `${slugify(updates.title, { lower: true, strict: true })}-${property._id.toString().slice(-6)}`;
   }
+
+  if (updates.purpose) updates.purpose = normalizePurpose(updates.purpose);
 
   numberFields.forEach((field) => {
     if (req.body[field] !== undefined) updates[field] = toNumber(req.body[field]);
@@ -167,14 +200,44 @@ export const updateProperty = asyncHandler(async (req, res) => {
     const imagesToRemove = property.images.filter((image) => publicIdsToRemove.includes(image.publicId));
 
     await deleteCloudinaryImages(imagesToRemove);
+    updates.mainImage =
+      property.mainImage?.publicId && publicIdsToRemove.includes(property.mainImage.publicId) ? null : property.mainImage;
+    updates.galleryImages = property.galleryImages.filter((image) => !publicIdsToRemove.includes(image.publicId));
     updates.images = property.images.filter((image) => !publicIdsToRemove.includes(image.publicId));
   }
 
-  if (req.uploadedImages?.length) {
-    updates.images = [...(updates.images || property.images), ...req.uploadedImages];
+  if (req.uploadedMainImage) {
+    if (property.mainImage?.publicId) await deleteCloudinaryImages([property.mainImage]);
+    updates.mainImage = req.uploadedMainImage;
   }
 
-  const updated = await Property.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+  if (req.uploadedGalleryImages?.length) {
+    updates.galleryImages = [...(updates.galleryImages || property.galleryImages), ...req.uploadedGalleryImages];
+  }
+
+  const legacyImages = req.uploadedImages?.filter(
+    (image) =>
+      image.publicId !== req.uploadedMainImage?.publicId &&
+      !(req.uploadedGalleryImages || []).some((galleryImage) => galleryImage.publicId === image.publicId),
+  );
+
+  if (legacyImages?.length) {
+    if (!updates.mainImage && !property.mainImage && legacyImages[0]) {
+      updates.mainImage = legacyImages[0];
+      updates.galleryImages = [...(updates.galleryImages || property.galleryImages), ...legacyImages.slice(1)];
+    } else {
+      updates.galleryImages = [...(updates.galleryImages || property.galleryImages), ...legacyImages];
+    }
+  }
+
+  const nextMainImage = Object.prototype.hasOwnProperty.call(updates, 'mainImage') ? updates.mainImage : property.mainImage;
+  const nextGalleryImages = updates.galleryImages || property.galleryImages;
+  updates.images = nextMainImage ? [nextMainImage, ...nextGalleryImages] : nextGalleryImages;
+
+  const updated = await Property.findByIdAndUpdate(req.params.id, updates, {
+    returnDocument: 'after',
+    runValidators: true,
+  });
 
   res.status(200).json({ success: true, data: updated });
 });

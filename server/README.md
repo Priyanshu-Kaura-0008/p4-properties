@@ -101,21 +101,22 @@ GET  /api/auth/profile
 POST   /api/properties
 GET    /api/properties
 GET    /api/properties/featured
-GET    /api/properties/:id
+GET    /api/properties/search
+GET    /api/properties/:slug
 PUT    /api/properties/:id
 DELETE /api/properties/:id
 ```
 
-`GET /api/properties/:id` accepts either a MongoDB ObjectId or a slug.
+`GET /api/properties/:slug` returns the public property detail page payload.
 
 Property filtering supports:
 
 ```text
 search, featured, city, location, purpose, propertyType, type, category,
-minPrice, maxPrice, budget, minLandArea, maxLandArea, page, limit, sort
+minPrice, maxPrice, budget, minArea, maxArea, minLandArea, maxLandArea, page, limit, sort
 ```
 
-Property image uploads use the `images` field and are stored in:
+Property image uploads use `mainImage` and `galleryImages`. The legacy `images` field is also accepted. Images are stored in:
 
 ```text
 p4-properties/properties
@@ -190,8 +191,9 @@ Returns:
 
 ```text
 totalProperties
-totalInquiries
 featuredProperties
+latestProperties
+totalInquiries
 testimonialsCount
 blogsCount
 pendingSiteVisits

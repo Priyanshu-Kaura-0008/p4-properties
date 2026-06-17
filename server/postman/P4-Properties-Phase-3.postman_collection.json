@@ -1,0 +1,429 @@
+{
+  "info": {
+    "name": "P4 Properties Phase 3 - Property Management",
+    "description": "Postman collection for Phase 3 property management APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('login succeeds', function () { pm.response.to.have.status(200); });",
+              "const json = pm.response.json();",
+              "if (json.token) pm.collectionVariables.set('token', json.token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Properties - Create",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "title",
+              "value": "Palm Residency Phase 3",
+              "type": "text"
+            },
+            {
+              "key": "description",
+              "value": "Premium property created from the Phase 3 Postman collection.",
+              "type": "text"
+            },
+            {
+              "key": "propertyType",
+              "value": "Apartment",
+              "type": "text"
+            },
+            {
+              "key": "category",
+              "value": "Residential",
+              "type": "text"
+            },
+            {
+              "key": "purpose",
+              "value": "buy",
+              "type": "text"
+            },
+            {
+              "key": "price",
+              "value": "8500000",
+              "type": "text"
+            },
+            {
+              "key": "location",
+              "value": "Sector 82",
+              "type": "text"
+            },
+            {
+              "key": "city",
+              "value": "Mohali",
+              "type": "text"
+            },
+            {
+              "key": "address",
+              "value": "Sector 82, Mohali, Punjab",
+              "type": "text"
+            },
+            {
+              "key": "bedrooms",
+              "value": "3",
+              "type": "text"
+            },
+            {
+              "key": "bathrooms",
+              "value": "3",
+              "type": "text"
+            },
+            {
+              "key": "area",
+              "value": "1850",
+              "type": "text"
+            },
+            {
+              "key": "featured",
+              "value": "true",
+              "type": "text"
+            },
+            {
+              "key": "status",
+              "value": "Available",
+              "type": "text"
+            },
+            {
+              "key": "amenities",
+              "value": "[\"Club House\",\"Parking\",\"Security\"]",
+              "type": "text"
+            },
+            {
+              "key": "googleMapLink",
+              "value": "https://maps.google.com/?q=Sector+82+Mohali",
+              "type": "text"
+            },
+            {
+              "key": "mainImage",
+              "type": "file",
+              "src": []
+            },
+            {
+              "key": "galleryImages",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/properties",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "properties"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('property created', function () { pm.response.to.have.status(201); });",
+              "const json = pm.response.json();",
+              "if (json.data?._id) pm.collectionVariables.set('propertyId', json.data._id);",
+              "if (json.data?.slug) pm.collectionVariables.set('propertySlug', json.data.slug);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Properties - Update",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "price",
+              "value": "8750000",
+              "type": "text"
+            },
+            {
+              "key": "featured",
+              "value": "true",
+              "type": "text"
+            },
+            {
+              "key": "amenities",
+              "value": "[\"Club House\",\"Parking\",\"Security\",\"Lift\"]",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/properties/{{propertyId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "properties",
+            "{{propertyId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Properties - Get All",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/properties?page=1&limit=12&sort=latest",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "properties"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "12"
+            },
+            {
+              "key": "sort",
+              "value": "latest"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Properties - Get By Slug",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/properties/{{propertySlug}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "properties",
+            "{{propertySlug}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Properties - Search",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/properties/search?location=Sector%2082&city=Mohali&propertyType=Apartment&category=Residential&purpose=buy&minPrice=5000000&maxPrice=10000000&search=palm",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "properties",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "location",
+              "value": "Sector 82"
+            },
+            {
+              "key": "city",
+              "value": "Mohali"
+            },
+            {
+              "key": "propertyType",
+              "value": "Apartment"
+            },
+            {
+              "key": "category",
+              "value": "Residential"
+            },
+            {
+              "key": "purpose",
+              "value": "buy"
+            },
+            {
+              "key": "minPrice",
+              "value": "5000000"
+            },
+            {
+              "key": "maxPrice",
+              "value": "10000000"
+            },
+            {
+              "key": "search",
+              "value": "palm"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Properties - Featured",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/properties/featured?limit=8",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "properties",
+            "featured"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "8"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Dashboard - Summary",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/dashboard",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "dashboard"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Properties - Delete",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/properties/{{propertyId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "properties",
+            "{{propertyId}}"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://p4-properties.onrender.com"
+    },
+    {
+      "key": "adminEmail",
+      "value": "priyanshukaura123@gmail.com"
+    },
+    {
+      "key": "adminPassword",
+      "value": "Password@123"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "propertyId",
+      "value": ""
+    },
+    {
+      "key": "propertySlug",
+      "value": ""
+    }
+  ]
+}

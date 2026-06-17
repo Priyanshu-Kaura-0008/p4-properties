@@ -8,7 +8,7 @@ export const getSettings = asyncHandler(async (req, res) => {
 
 export const updateSettings = asyncHandler(async (req, res) => {
   const settings = await Setting.findOneAndUpdate({}, req.body, {
-    new: true,
+    returnDocument: 'after',
     upsert: true,
     runValidators: true,
     setDefaultsOnInsert: true,

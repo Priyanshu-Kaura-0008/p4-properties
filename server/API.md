@@ -63,13 +63,16 @@ city=Mohali
 location=Sector 82
 propertyType=Apartment
 category=Residential
+purpose=buy
 status=Available
 area=1850
 bedrooms=3
 bathrooms=3
 amenities=["Club House","Parking","Security"]
 featured=true
-images=<file[]>
+googleMapLink=https://maps.google.com/?q=Sector+82+Mohali
+mainImage=<file>
+galleryImages=<file[]>
 ```
 
 ```json
@@ -82,6 +85,13 @@ images=<file[]>
     "city": "Mohali",
     "location": "Sector 82",
     "area": 1850,
+    "mainImage": {
+      "url": "https://res.cloudinary.com/.../main.jpg",
+      "publicId": "p4-properties/properties/main",
+      "width": 1254,
+      "height": 1254
+    },
+    "galleryImages": [],
     "images": [
       {
         "url": "https://res.cloudinary.com/.../image.jpg",
@@ -100,6 +110,12 @@ images=<file[]>
 GET /api/properties?city=Mohali&category=Residential&propertyType=Apartment&minPrice=5000000&maxPrice=10000000&featured=true&search=palm&page=1&limit=12&sort=latest
 ```
 
+Dedicated search route:
+
+```http
+GET /api/properties/search?location=Sector%2082&city=Mohali&propertyType=Apartment&category=Residential&purpose=buy&minPrice=5000000&maxPrice=10000000&search=palm
+```
+
 ```json
 {
   "success": true,
@@ -114,17 +130,17 @@ GET /api/properties?city=Mohali&category=Residential&propertyType=Apartment&minP
 Supported filters:
 
 ```text
-city, location, category, propertyType, minPrice, maxPrice, featured,
-search, minArea, maxArea, page, limit, sort
+location, city, propertyType, category, purpose, minPrice, maxPrice, budget,
+featured, search, minArea, maxArea, page, limit, sort
 ```
 
 ### Get Property
 
 ```http
-GET /api/properties/:id
+GET /api/properties/:slug
 ```
 
-`:id` may be a MongoDB ObjectId or a slug for frontend compatibility.
+Use the property slug returned by create/list APIs.
 
 ### Update Property
 
@@ -134,7 +150,8 @@ Authorization: Bearer <jwt>
 Content-Type: multipart/form-data
 ```
 
-Use any create fields. Add new files with `images`. Remove existing images with:
+Use any create fields. Replace the main image with `mainImage`. Add gallery files with `galleryImages`.
+The legacy `images` field is still accepted. Remove existing images with:
 
 ```text
 removeImagePublicIds=["p4-properties/properties/old-image"]
@@ -259,6 +276,7 @@ Authorization: Bearer <jwt>
   "data": {
     "totalProperties": 42,
     "featuredProperties": 8,
+    "latestProperties": [],
     "totalInquiries": 120,
     "totalSiteVisits": 35,
     "pendingSiteVisits": 9,

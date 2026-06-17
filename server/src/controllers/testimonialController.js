@@ -71,12 +71,19 @@ export const updateTestimonial = asyncHandler(async (req, res) => {
     updates.image = req.uploadedImages[0];
   }
 
-  const updated = await Testimonial.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+  const updated = await Testimonial.findByIdAndUpdate(req.params.id, updates, {
+    returnDocument: 'after',
+    runValidators: true,
+  });
   sendSuccess(res, { data: updated, message: 'Testimonial updated successfully' });
 });
 
 export const approveTestimonial = asyncHandler(async (req, res) => {
-  const testimonial = await Testimonial.findByIdAndUpdate(req.params.id, { approved: true }, { new: true });
+  const testimonial = await Testimonial.findByIdAndUpdate(
+    req.params.id,
+    { approved: true },
+    { returnDocument: 'after' },
+  );
   if (!testimonial) throw new ApiError('Testimonial not found', 404);
 
   sendSuccess(res, { data: testimonial, message: 'Testimonial approved successfully' });

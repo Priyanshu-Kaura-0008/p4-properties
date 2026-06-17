@@ -82,7 +82,7 @@ export const updateInquiry = asyncHandler(async (req, res) => {
   });
 
   const inquiry = await Inquiry.findByIdAndUpdate(req.params.id, updates, {
-    new: true,
+    returnDocument: 'after',
     runValidators: true,
   }).populate('property', propertyFields);
 

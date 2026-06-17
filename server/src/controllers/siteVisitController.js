@@ -109,7 +109,7 @@ export const updateSiteVisit = asyncHandler(async (req, res) => {
   });
 
   const visit = await SiteVisit.findByIdAndUpdate(req.params.id, updates, {
-    new: true,
+    returnDocument: 'after',
     runValidators: true,
   }).populate('property', propertyFields);
 
