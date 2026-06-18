@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { COMPANY_INFO } from '../constants/companyInfo';
 import { absoluteUrl, defaultSeo, realEstateAgentSchema } from '../utils/seo';
 
 export default function SEO({
@@ -22,7 +23,7 @@ export default function SEO({
       <link rel="canonical" href={canonicalUrl} />
 
       <meta property="og:type" content={type} />
-      <meta property="og:site_name" content="P4 Properties" />
+      <meta property="og:site_name" content={COMPANY_INFO.companyName} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={imageUrl} />

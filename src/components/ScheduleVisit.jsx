@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import adminApi from '../api/adminApi';
 import { locationOptions } from '../data/siteData';
+import siteVisitService from '../services/siteVisitService';
+import { trackEvent } from '../utils/tracking';
 
 const inputClass =
-  'w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm font-semibold text-ink outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/15';
+  'min-h-12 w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm font-semibold text-ink outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/15';
 
 const budgetOptions = ['Under Rs. 50 Lakhs', 'Rs. 50 Lakhs - Rs. 1 Crore', 'Rs. 1 Crore - Rs. 2 Crores', 'Rs. 2 Crores - Rs. 5 Crores', 'Above Rs. 5 Crores'];
 const propertyTypes = ['Villa', 'Apartment', 'Independent Floor', 'Plot', 'SCO', 'Shop', 'Office', 'Commercial Land'];
@@ -33,7 +34,12 @@ export default function ScheduleVisit({ property }) {
     setSubmitting(true);
     setStatus('');
     try {
-      await adminApi.post('/site-visits', { ...form, property: property._id });
+      await siteVisitService.createSiteVisit({ ...form, property: property._id, leadSource: 'website' });
+      trackEvent('site_visit_submit', {
+        property_id: property._id,
+        property_title: property.title,
+        city: property.city,
+      });
       setStatus('Site visit request submitted successfully.');
       setForm(getInitialForm(property));
     } catch (error) {
@@ -46,13 +52,13 @@ export default function ScheduleVisit({ property }) {
   return (
     <motion.section
       id="site-visit"
-      className="rounded-2xl border border-ink/10 bg-white/85 p-7 shadow-soft backdrop-blur-xl"
+      className="rounded-2xl border border-ink/10 bg-white/85 p-5 shadow-soft backdrop-blur-xl sm:p-7"
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.6 }}
     >
-      <h2 className="font-display text-3xl font-bold text-ink">Schedule a Site Visit</h2>
+      <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">Schedule a Site Visit</h2>
       <p className="mt-3 leading-8 text-muted">Share your preferred date and time for a private walkthrough.</p>
       <form onSubmit={submit} className="mt-7 grid gap-4 md:grid-cols-2">
         <Field label="Full Name"><input className={inputClass} value={form.name} onChange={(e) => update('name', e.target.value)} required /></Field>
@@ -81,7 +87,7 @@ export default function ScheduleVisit({ property }) {
         <Field label="Preferred Time"><input className={inputClass} type="time" value={form.preferredTime} onChange={(e) => update('preferredTime', e.target.value)} required /></Field>
         <Field label="Remarks" span><textarea className={`${inputClass} min-h-32`} value={form.remarks} onChange={(e) => update('remarks', e.target.value)} /></Field>
         {status && <p className="text-sm font-semibold text-muted md:col-span-2">{status}</p>}
-        <button disabled={submitting} className="rounded-xl bg-gold px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-night transition-colors hover:bg-night hover:text-white disabled:opacity-60 md:col-span-2" type="submit">
+        <button disabled={submitting} className="min-h-12 rounded-xl bg-gold px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-night transition-colors hover:bg-night hover:text-white disabled:opacity-60 md:col-span-2" type="submit">
           {submitting ? 'Scheduling...' : 'Schedule Visit'}
         </button>
       </form>

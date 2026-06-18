@@ -2,8 +2,9 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { FaCalendarCheck, FaCheckCircle, FaHome, FaPhoneAlt, FaWhatsapp } from 'react-icons/fa';
-import adminApi from '../api/adminApi';
 import { locationOptions } from '../data/siteData';
+import siteVisitService from '../services/siteVisitService';
+import { trackEvent } from '../utils/tracking';
 
 const input =
   'w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-white outline-none placeholder:text-white/35 focus:border-gold focus:ring-2 focus:ring-gold/20 [&_option]:bg-white [&_option]:text-night';
@@ -17,16 +18,19 @@ export default function LeadGenerationSection() {
 
   const submit = async (values) => {
     try {
-      await adminApi.post('/site-visits', {
+      await siteVisitService.createSiteVisit({
         name: values.name,
         phone: values.phone,
+        email: values.email,
         address: values.address,
         preferredLocation: values.preferredLocation,
         budget: values.budget,
         propertyType: values.propertyType,
         preferredDate: values.preferredDate,
+        leadSource: 'website',
         remarks: values.remarks,
       });
+      trackEvent('site_visit_submit', { source: 'lead_generation_section', preferred_location: values.preferredLocation });
       toast.success('Site visit request submitted');
       reset();
     } catch (error) {
@@ -46,32 +50,32 @@ export default function LeadGenerationSection() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(212,175,55,.18),transparent_32%),linear-gradient(135deg,rgba(255,255,255,.08),transparent_44%)]" />
       <div className="container-p4 relative z-10">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <div>
+          <div className="text-center lg:text-left">
             <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-gold">Private Property Advisory</p>
-            <h2 className="font-display text-4xl font-bold leading-tight md:text-6xl">Schedule Your Site Visit Today</h2>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/70">
+            <h2 className="font-display text-3xl font-bold leading-tight md:text-6xl">Schedule Your Site Visit Today</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/70 md:mt-5 md:text-lg md:leading-8 lg:mx-0">
               Share your preference and our team will help shortlist verified options, plan your visit, and guide your investment decision.
             </p>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <div className="mt-6 grid grid-cols-2 gap-3 md:mt-8 md:gap-4">
               {benefits.map((benefit) => (
                 <motion.div
                   key={benefit}
                   whileHover={{ y: -4 }}
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-xl"
+                  className="flex min-h-16 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/10 p-3 text-center backdrop-blur-xl md:justify-start md:gap-3 md:p-4 md:text-left"
                 >
-                  <FaCheckCircle className="text-gold" aria-hidden="true" />
-                  <span className="font-bold">{benefit}</span>
+                  <FaCheckCircle className="shrink-0 text-gold" aria-hidden="true" />
+                  <span className="text-xs font-bold leading-5 md:text-base">{benefit}</span>
                 </motion.div>
               ))}
             </div>
 
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <a href="tel:+918195002006" className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold px-6 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-all hover:-translate-y-1 hover:bg-white">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row lg:mt-9">
+              <a href="tel:+918195002006" onClick={() => trackEvent('phone_click', { source: 'lead_generation_section' })} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold px-6 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-all hover:-translate-y-1 hover:bg-white">
                 <FaPhoneAlt aria-hidden="true" />
                 Call Now
               </a>
-              <a href="https://wa.me/918195002006" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-white backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-gold hover:text-gold">
+              <a href="https://wa.me/918195002006" onClick={() => trackEvent('whatsapp_click', { source: 'lead_generation_section' })} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-white backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-gold hover:text-gold">
                 <FaWhatsapp aria-hidden="true" />
                 WhatsApp Us
               </a>
@@ -101,6 +105,7 @@ export default function LeadGenerationSection() {
             <Field label="Mobile Number" error={errors.phone?.message}>
               <input className={input} inputMode="numeric" {...register('phone', { required: 'Mobile number is required', pattern: { value: /^[6-9]\d{9}$/, message: 'Enter a valid 10-digit mobile number' } })} />
             </Field>
+            <Field label="Email"><input className={input} type="email" {...register('email')} /></Field>
             <Field label="Address" error={errors.address?.message} span><input className={input} {...register('address', { required: 'Address is required' })} /></Field>
             <Field label="Preferred Location" error={errors.preferredLocation?.message}>
               <select className={input} {...register('preferredLocation', { required: 'Preferred location is required' })}>
@@ -132,33 +137,6 @@ export default function LeadGenerationSection() {
           </button>
           </motion.form>
         </div>
-
-        <motion.div
-          className="mt-12 flex flex-col items-center justify-between gap-5 rounded-2xl border border-gold/25 bg-white/10 p-6 text-center shadow-[0_22px_70px_rgba(0,0,0,.28)] backdrop-blur-xl md:flex-row md:text-left"
-          initial={{ opacity: 0, y: 22 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.65, delay: 0.15 }}
-        >
-          <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-gold">Instant Lead Support</p>
-            <h3 className="mt-2 font-display text-3xl font-bold">Ready to visit verified properties?</h3>
-          </div>
-          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-            <a href="tel:+918195002006" className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-all hover:-translate-y-1 hover:bg-white">
-              <FaPhoneAlt aria-hidden="true" />
-              Call Now
-            </a>
-            <a href="https://wa.me/918195002006" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white transition-all hover:-translate-y-1 hover:border-gold hover:text-gold">
-              <FaWhatsapp aria-hidden="true" />
-              WhatsApp Us
-            </a>
-            <a href="#book-site-visit" className="inline-flex items-center justify-center gap-2 rounded-xl border border-gold/40 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-gold transition-all hover:-translate-y-1 hover:bg-gold hover:text-night">
-              <FaCalendarCheck aria-hidden="true" />
-              Book Site Visit
-            </a>
-          </div>
-        </motion.div>
       </div>
     </motion.section>
   );

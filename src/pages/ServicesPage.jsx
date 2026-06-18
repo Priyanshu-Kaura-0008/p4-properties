@@ -17,7 +17,7 @@ export default function ServicesPage() {
       <Navbar />
       <section className="bg-night px-4 pb-16 pt-32 text-center text-white">
         <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-gold">Our Services</p>
-        <h1 className="font-display text-5xl font-bold md:text-7xl">Premium Real Estate Solutions</h1>
+        <h1 className="font-display text-4xl font-bold sm:text-5xl md:text-7xl">Premium Real Estate Solutions</h1>
       </section>
       <ServicesSection />
       <Footer />

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
-import adminApi from '../../api/adminApi';
+import blogService from '../../services/blogService';
 import PageHeader from '../components/PageHeader';
 
 const input = 'w-full rounded-xl border border-white/10 bg-[#1A1A1A] px-4 py-3 text-white outline-none placeholder:text-white/35 focus:border-gold';
@@ -14,7 +14,7 @@ export default function BlogFormAdmin() {
 
   useEffect(() => {
     if (id) {
-      adminApi.get('/blogs', { params: { limit: 100 } }).then(({ data }) => {
+      blogService.getBlogs({ limit: 100 }).then((data) => {
         const blog = (data.data || []).find((item) => item._id === id);
         if (blog) reset({ ...blog, tags: blog.tags?.join(', ') });
       });
@@ -28,8 +28,8 @@ export default function BlogFormAdmin() {
       if (key !== 'image' && key !== 'published' && value !== undefined) formData.append(key, value);
     });
     if (values.image?.[0]) formData.append('image', values.image[0]);
-    if (id) await adminApi.put(`/blogs/${id}`, formData);
-    else await adminApi.post('/blogs', formData);
+    if (id) await blogService.updateBlog(id, formData);
+    else await blogService.createBlog(formData);
     toast.success(id ? 'Blog updated' : 'Blog created');
     navigate('/admin/blogs');
   };

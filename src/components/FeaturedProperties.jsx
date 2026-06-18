@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { FaBath, FaBed, FaMapMarkerAlt, FaRulerCombined } from 'react-icons/fa';
+import { FaMapMarkerAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import adminApi from '../api/adminApi';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import propertyService from '../services/propertyService';
+import 'swiper/css';
 
 const fallbackImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85';
 
@@ -31,11 +33,6 @@ const formatPrice = (price) => {
   return `Rs. ${value.toLocaleString('en-IN')}`;
 };
 
-const formatArea = (property) => {
-  if (!property.landArea) return '-';
-  return `${Number(property.landArea).toLocaleString('en-IN')} ${property.areaUnit || 'Sq.ft.'}`;
-};
-
 export default function FeaturedProperties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,12 +41,9 @@ export default function FeaturedProperties() {
   useEffect(() => {
     const controller = new AbortController();
 
-    adminApi
-      .get('/properties', {
-        params: { featured: true, limit: 6 },
-        signal: controller.signal,
-      })
-      .then(({ data }) => {
+    propertyService
+      .getFeaturedProperties({ limit: 6 }, { signal: controller.signal })
+      .then((data) => {
         setProperties(data.data || []);
         setError('');
       })
@@ -68,7 +62,7 @@ export default function FeaturedProperties() {
   return (
     <motion.section
       id="properties"
-      className="relative overflow-hidden bg-night py-24 text-white"
+      className="relative overflow-hidden bg-night py-12 text-white md:py-24"
       variants={sectionVariants}
       initial="hidden"
       whileInView="visible"
@@ -76,17 +70,17 @@ export default function FeaturedProperties() {
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,175,55,0.22),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.08),transparent_42%)]" />
       <div className="container-p4 relative z-10">
-        <div className="mb-12 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div className="mb-8 flex flex-col gap-5 md:mb-12 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-gold">Selected Portfolio</p>
-            <h2 className="font-display text-4xl font-bold leading-tight md:text-5xl">Featured Properties</h2>
+            <h2 className="font-display text-3xl font-bold leading-tight md:text-5xl">Featured Properties</h2>
             <p className="mt-4 max-w-2xl leading-8 text-white/72">
               Handpicked residential and commercial opportunities from the P4 Properties portfolio.
             </p>
           </div>
           <Link
             to="/properties"
-            className="w-fit border border-white/25 px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white transition-all hover:border-gold hover:bg-gold hover:text-night hover:shadow-[0_0_28px_rgba(212,175,55,0.35)]"
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-white/25 px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white transition-all hover:border-gold hover:bg-gold hover:text-night hover:shadow-[0_0_28px_rgba(212,175,55,0.35)] sm:w-fit"
           >
             Explore All
           </Link>
@@ -102,17 +96,28 @@ export default function FeaturedProperties() {
             message="Explore the complete P4 Properties portfolio for available opportunities."
           />
         ) : (
-          <motion.div className="grid gap-7 md:grid-cols-2 xl:grid-cols-3" variants={sectionVariants}>
+          <>
+          <motion.div className="lg:hidden" variants={sectionVariants}>
+            <Swiper slidesPerView={1.1} spaceBetween={16} aria-label="Featured properties slider">
+              {properties.map((property) => (
+                <SwiperSlide key={property._id} className="h-auto">
+                  <FeaturedPropertyCard property={property} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </motion.div>
+          <motion.div className="hidden gap-7 lg:grid lg:grid-cols-3" variants={sectionVariants}>
             {properties.map((property) => (
               <FeaturedPropertyCard key={property._id} property={property} />
             ))}
           </motion.div>
+          </>
         )}
 
         <div className="mt-12 text-center">
           <Link
             to="/properties"
-            className="inline-flex bg-gold px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-night shadow-[0_0_30px_rgba(212,175,55,0.28)] transition-all hover:-translate-y-1 hover:bg-white hover:shadow-[0_0_42px_rgba(212,175,55,0.48)]"
+            className="inline-flex rounded-xl bg-gold px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-night shadow-[0_0_30px_rgba(212,175,55,0.28)] transition-all hover:-translate-y-1 hover:bg-white hover:shadow-[0_0_42px_rgba(212,175,55,0.48)]"
           >
             Explore All Properties
           </Link>
@@ -123,14 +128,14 @@ export default function FeaturedProperties() {
 }
 
 function FeaturedPropertyCard({ property }) {
-  const image = property.images?.[0]?.url || fallbackImage;
-  const location = [property.locality, property.city].filter(Boolean).join(', ');
+  const image = property.mainImage?.url || property.images?.[0]?.url || fallbackImage;
+  const location = [property.location || property.locality, property.city].filter(Boolean).join(', ');
 
   return (
     <motion.article
       variants={cardVariants}
       whileHover={{ y: -10 }}
-      className="group overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.32)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_32px_100px_rgba(212,175,55,0.2)]"
+      className="group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.32)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_32px_100px_rgba(212,175,55,0.2)]"
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
@@ -145,32 +150,20 @@ function FeaturedPropertyCard({ property }) {
         </span>
       </div>
 
-      <div className="p-6">
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
         <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-white/72">
           <FaMapMarkerAlt className="text-gold" aria-hidden="true" />
           {location || property.address || 'Prime Location'}
         </p>
-        <h3 className="font-display text-2xl font-bold leading-tight text-white">{property.title}</h3>
-        <p className="mt-3 text-2xl font-extrabold text-gold">{formatPrice(property.price)}</p>
-
-        <div className="mt-6 grid grid-cols-3 gap-3 border-y border-white/15 py-4 text-sm font-bold text-white/78">
-          <span className="flex items-center gap-2">
-            <FaBed className="text-gold" aria-hidden="true" />
-            {property.bedrooms || '-'} Beds
-          </span>
-          <span className="flex items-center gap-2">
-            <FaBath className="text-gold" aria-hidden="true" />
-            {property.bathrooms || '-'} Baths
-          </span>
-          <span className="flex items-center gap-2">
-            <FaRulerCombined className="text-gold" aria-hidden="true" />
-            {formatArea(property)}
-          </span>
-        </div>
+        <h3 className="font-display text-xl font-bold leading-tight text-white sm:text-2xl">{property.title}</h3>
+        <p className="mt-3 text-xl font-extrabold text-gold sm:text-2xl">{formatPrice(property.price)}</p>
+        <p className="mt-3 border-y border-white/15 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-white/78">
+          {property.propertyType || property.category || 'Property'}
+        </p>
 
         <Link
           to={`/properties/${property.slug}`}
-          className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-gold px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-all hover:bg-white hover:shadow-[0_0_34px_rgba(212,175,55,0.5)]"
+          className="mt-auto inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-gold px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-all hover:bg-white hover:shadow-[0_0_34px_rgba(212,175,55,0.5)]"
         >
           View Details
         </Link>
@@ -181,11 +174,14 @@ function FeaturedPropertyCard({ property }) {
 
 function FeaturedSkeleton() {
   return (
-    <div className="grid gap-7 md:grid-cols-2 xl:grid-cols-3" aria-label="Loading featured properties">
+    <div
+      className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] lg:grid lg:grid-cols-3 lg:gap-7 lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden"
+      aria-label="Loading featured properties"
+    >
       {Array.from({ length: 6 }).map((_, index) => (
         <div
           key={index}
-          className="animate-pulse overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl"
+          className="w-[85vw] min-w-[85vw] max-w-[85vw] snap-start animate-pulse overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl lg:w-auto lg:min-w-0 lg:max-w-none"
         >
           <div className="aspect-[4/3] bg-white/15" />
           <div className="space-y-4 p-6">
@@ -208,7 +204,7 @@ function FeaturedState({ title, message }) {
       <p className="mx-auto mt-3 max-w-xl leading-8 text-white/72">{message}</p>
       <Link
         to="/properties"
-        className="mt-6 inline-flex bg-gold px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-all hover:bg-white hover:shadow-[0_0_34px_rgba(212,175,55,0.45)]"
+        className="mt-6 inline-flex rounded-xl bg-gold px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-all hover:bg-white hover:shadow-[0_0_34px_rgba(212,175,55,0.45)]"
       >
         Browse Properties
       </Link>

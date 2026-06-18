@@ -42,7 +42,7 @@ export default function LocationPage() {
       <section className="relative flex min-h-[70vh] items-center bg-night px-4 pt-24 text-center text-white">
         <div className="container-p4">
           <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-gold">Prime Location</p>
-          <h1 className="font-display text-5xl font-bold md:text-7xl">Properties in {city}</h1>
+          <h1 className="font-display text-4xl font-bold sm:text-5xl md:text-7xl">Properties in {city}</h1>
           <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-white/72">{description}</p>
           <Link
             to={`/properties?location=${encodeURIComponent(city)}`}

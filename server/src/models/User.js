@@ -6,7 +6,10 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true, maxlength: 80 },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, minlength: 8, select: false },
-    role: { type: String, enum: ['admin'], default: 'admin' },
+    role: { type: String, enum: ['admin', 'builder', 'agent'], default: 'admin', index: true },
+    phone: { type: String, trim: true, maxlength: 20 },
+    assignedCity: { type: String, trim: true, index: true },
+    active: { type: Boolean, default: true, index: true },
   },
   { timestamps: true },
 );

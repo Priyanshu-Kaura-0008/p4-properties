@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { Autoplay } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
 import chandigarhImage from '../assets/locations/chandigarh.jpg';
 import khararImage from '../assets/locations/kharar.jpg';
 import kuraliImage from '../assets/locations/kurali.jpg';
@@ -73,7 +76,7 @@ export default function LocationsSection() {
   return (
     <motion.section
       id="locations"
-      className="relative overflow-hidden bg-ivory py-24"
+      className="relative overflow-hidden bg-ivory py-10 md:py-24"
       variants={sectionVariants}
       initial="hidden"
       whileInView="visible"
@@ -81,46 +84,51 @@ export default function LocationsSection() {
     >
       <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(212,175,55,0.13),transparent_34%),radial-gradient(circle_at_15%_85%,rgba(17,17,17,0.08),transparent_30%)]" />
       <div className="container-p4 relative z-10">
-        <motion.div variants={cardVariants} className="mx-auto mb-12 max-w-4xl text-center">
+        <motion.div variants={cardVariants} className="mx-auto mb-8 max-w-4xl text-center md:mb-12">
           <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-gold">Prime Coverage</p>
-          <h2 className="font-display text-4xl font-bold leading-tight text-ink md:text-5xl">
+          <h2 className="font-display text-3xl font-bold leading-tight text-ink md:text-5xl">
             Explore Prime Locations
           </h2>
-          <p className="mx-auto mt-4 max-w-3xl text-lg leading-8 text-muted">
+          <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-muted md:text-lg">
             Discover exceptional residential and commercial opportunities across the Tricity and surrounding investment
             destinations.
           </p>
         </motion.div>
 
-        <motion.div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4" variants={sectionVariants}>
+        <motion.div className="w-full max-w-full overflow-hidden lg:hidden" variants={sectionVariants}>
+          <Swiper
+            modules={[Autoplay]}
+            slidesPerView={1.05}
+            spaceBetween={14}
+            loop
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+          >
+            {locationCards.map((location) => (
+              <SwiperSlide key={location.city} className="h-auto">
+                <LocationCard location={location} compact />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </motion.div>
+
+        <motion.div className="hidden gap-6 lg:grid lg:grid-cols-2 xl:grid-cols-4" variants={sectionVariants}>
           {locationCards.map((location) => (
             <LocationCard key={location.city} location={location} />
           ))}
-        </motion.div>
-
-        <motion.div
-          variants={cardVariants}
-          className="mx-auto mt-14 max-w-3xl rounded-2xl border border-white/70 bg-white/75 p-8 text-center shadow-soft backdrop-blur-xl"
-        >
-          <p className="font-display text-2xl font-bold text-ink">Can&apos;t decide where to invest?</p>
-          <Link
-            to="/contact"
-            className="mt-6 inline-flex rounded-xl bg-night px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-white shadow-soft transition-all hover:-translate-y-1 hover:bg-gold hover:text-night hover:shadow-premium"
-          >
-            Talk to Our Experts
-          </Link>
         </motion.div>
       </div>
     </motion.section>
   );
 }
 
-function LocationCard({ location }) {
+function LocationCard({ location, compact = false }) {
   return (
     <motion.article
       variants={cardVariants}
       whileHover={{ y: -10 }}
-      className="group relative min-h-[390px] overflow-hidden rounded-2xl border border-white/25 bg-night shadow-soft transition-shadow hover:shadow-premium"
+      className={`group relative overflow-hidden rounded-2xl border border-white/25 bg-night shadow-soft transition-shadow hover:shadow-premium ${
+        compact ? 'min-h-[280px] w-full' : 'min-h-[390px]'
+      }`}
     >
       <img
         src={location.image}
@@ -130,13 +138,13 @@ function LocationCard({ location }) {
         className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-night via-night/60 to-night/12" />
-      <div className="relative z-10 flex h-full min-h-[390px] flex-col justify-end p-6 text-white">
+      <div className={`relative z-10 flex h-full flex-col justify-end text-white ${compact ? 'min-h-[280px] p-5' : 'min-h-[390px] p-6'}`}>
         <p className="mb-3 flex items-center gap-2 text-sm font-bold text-gold">
           <FaMapMarkerAlt aria-hidden="true" />
           P4 Properties
         </p>
-        <h3 className="font-display text-3xl font-bold leading-tight">{location.city}</h3>
-        <p className="mt-3 min-h-[84px] leading-7 text-white/78">{location.description}</p>
+        <h3 className="font-display text-2xl font-bold leading-tight md:text-3xl">{location.city}</h3>
+        <p className={`${compact ? 'mt-2 text-sm leading-6' : 'mt-3 min-h-[84px] leading-7'} text-white/78`}>{location.description}</p>
         <Link
           to={propertyLink(location.city)}
           className="mt-6 inline-flex w-fit rounded-xl border border-white/25 bg-white/10 px-5 py-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white backdrop-blur-xl transition-all hover:border-gold hover:bg-gold hover:text-night hover:shadow-[0_0_30px_rgba(212,175,55,0.42)]"

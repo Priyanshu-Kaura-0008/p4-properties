@@ -14,8 +14,8 @@ export default function AnimatedCounter({ value, suffix, label }) {
 
   return (
     <div ref={ref} className="text-center">
-      <motion.p className="font-display text-5xl font-bold text-ink md:text-6xl">{rounded}</motion.p>
-      <p className="mt-3 text-sm font-bold uppercase tracking-[0.18em] text-muted">{label}</p>
+      <motion.p className="font-display text-3xl font-bold text-ink sm:text-5xl md:text-6xl">{rounded}</motion.p>
+      <p className="counter-label mt-2 text-xs font-bold uppercase tracking-[0.12em] text-muted sm:mt-3 sm:text-sm sm:tracking-[0.18em]">{label}</p>
     </div>
   );
 }

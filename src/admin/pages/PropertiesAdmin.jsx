@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { FaEdit, FaPlus, FaSearch, FaTrash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import adminApi from '../../api/adminApi';
+import propertyService from '../../services/propertyService';
 import AdminTable from '../components/AdminTable';
 import ConfirmModal from '../components/ConfirmModal';
 import PageHeader from '../components/PageHeader';
@@ -21,9 +21,9 @@ export default function PropertiesAdmin() {
 
   const loadProperties = () => {
     setLoading(true);
-    adminApi
-      .get('/properties', { params: { search, status, page, limit: 10 } })
-      .then(({ data }) => {
+    propertyService
+      .getProperties({ search, status, page, limit: 10 })
+      .then((data) => {
         setProperties(data.data || []);
         setPages(data.pages || data.meta?.pages || 1);
       })
@@ -33,7 +33,7 @@ export default function PropertiesAdmin() {
   useEffect(() => { loadProperties(); }, [page, status]);
 
   const deleteProperty = async () => {
-    await adminApi.delete(`/properties/${confirmId}`);
+    await propertyService.deleteProperty(confirmId);
     toast.success('Property deleted');
     setConfirmId(null);
     loadProperties();

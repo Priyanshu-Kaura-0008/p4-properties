@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import adminApi from '../api/adminApi';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import FeaturedProjects from '../components/FeaturedProjects';
 import FloatingActions from '../components/FloatingActions';
 import Footer from '../components/Footer';
@@ -14,6 +13,7 @@ import PropertyPagination from '../components/PropertyPagination';
 import PropertySortBar from '../components/PropertySortBar';
 import SectionHeading from '../components/SectionHeading';
 import SEO from '../components/SEO';
+import propertyService from '../services/propertyService';
 import { breadcrumbSchema } from '../utils/seo';
 
 const initialFilters = {
@@ -22,6 +22,8 @@ const initialFilters = {
   type: [],
   location: [],
   budget: [],
+  status: [],
+  search: '',
   bedrooms: [],
   amenities: [],
   minArea: 500,
@@ -44,6 +46,37 @@ const sortMap = {
   'Featured First': 'featured',
 };
 
+const cityPages = {
+  '/properties/chandigarh': {
+    city: 'Chandigarh',
+    title: 'Property Dealer Chandigarh | P4 Properties',
+    description:
+      'Explore verified residential and commercial properties in Chandigarh with P4 Properties, a trusted property dealer for premium homes, SCOs, offices, and investment opportunities.',
+    h1: 'Property Dealer Chandigarh',
+  },
+  '/properties/mohali': {
+    city: 'Mohali',
+    title: 'Real Estate Mohali | P4 Properties',
+    description:
+      'Browse live real estate listings in Mohali including luxury villas, apartments, plots, shops, offices, and commercial investments with P4 Properties.',
+    h1: 'Real Estate Mohali',
+  },
+  '/properties/panchkula': {
+    city: 'Panchkula',
+    title: 'Luxury Homes Panchkula | P4 Properties',
+    description:
+      'Find luxury homes in Panchkula with verified villas, independent floors, premium apartments, and residential investment options curated by P4 Properties.',
+    h1: 'Luxury Homes Panchkula',
+  },
+  '/properties/new-chandigarh': {
+    city: 'New Chandigarh',
+    title: 'Property Investment New Chandigarh | P4 Properties',
+    description:
+      'Discover property investment opportunities in New Chandigarh including plots, villas, apartments, and growth corridor real estate options with P4 Properties.',
+    h1: 'Property Investment New Chandigarh',
+  },
+};
+
 const fallbackImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80';
 
 const formatPrice = (price) => {
@@ -54,9 +87,11 @@ const formatPrice = (price) => {
 
 const mapProperty = (property) => ({
   id: property.slug || property._id,
+  slug: property.slug,
+  _id: property._id,
   title: property.title,
   price: formatPrice(property.price),
-  location: [property.locality, property.city].filter(Boolean).join(', ') || property.address || property.city,
+  location: [property.location || property.locality, property.city].filter(Boolean).join(', ') || property.address || property.city,
   city: property.city,
   purpose: property.purpose,
   category: property.category || 'Residential',
@@ -64,11 +99,11 @@ const mapProperty = (property) => ({
   bedrooms: property.bedrooms,
   bathrooms: property.bathrooms,
   parking: property.parking,
-  area: property.landArea,
+  area: property.area || property.landArea,
   featured: property.featured,
   description: property.description,
   amenities: property.amenities || [],
-  image: property.images?.[0]?.url || fallbackImage,
+  image: property.mainImage?.url || property.images?.[0]?.url || fallbackImage,
 });
 
 const getSingleParam = (searchParams, key) => searchParams.get(key) || '';
@@ -79,10 +114,15 @@ const filtersFromSearchParams = (searchParams) => ({
   category: getSingleParam(searchParams, 'category') ? [getSingleParam(searchParams, 'category')] : [],
   type: getSingleParam(searchParams, 'type') ? [getSingleParam(searchParams, 'type')] : [],
   location: getSingleParam(searchParams, 'location') ? [getSingleParam(searchParams, 'location')] : [],
+  status: getSingleParam(searchParams, 'status') ? [getSingleParam(searchParams, 'status')] : [],
   budget: getSingleParam(searchParams, 'budget') ? [getSingleParam(searchParams, 'budget')] : [],
+  search: getSingleParam(searchParams, 'search'),
+  minArea: Number(searchParams.get('minArea')) || initialFilters.minArea,
+  maxArea: Number(searchParams.get('maxArea')) || initialFilters.maxArea,
 });
 
 export default function PropertiesPage() {
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [properties, setProperties] = useState([]);
   const [total, setTotal] = useState(0);
@@ -94,6 +134,7 @@ export default function PropertiesPage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const filters = useMemo(() => filtersFromSearchParams(searchParams), [searchParams]);
+  const cityPage = cityPages[location.pathname];
   const currentPage = Math.max(Number(searchParams.get('page')) || 1, 1);
 
   useEffect(() => {
@@ -107,25 +148,55 @@ export default function PropertiesPage() {
     const purpose = searchParams.get('purpose');
     const category = searchParams.get('category');
     const location = searchParams.get('location');
+    const city = cityPage?.city || searchParams.get('city');
     const propertyType = searchParams.get('type');
     const budget = searchParams.get('budget');
+    const status = searchParams.get('status');
+    const search = searchParams.get('search');
+    const minPrice = searchParams.get('minPrice');
+    const maxPrice = searchParams.get('maxPrice');
+    const minArea = searchParams.get('minArea');
+    const maxArea = searchParams.get('maxArea');
 
     if (purpose) params.purpose = purpose;
     if (category) params.category = category;
-    if (location) params.city = location;
+    if (city) params.city = city;
+    if (location) params.location = location;
     if (propertyType) params.propertyType = propertyType;
+    if (status) params.status = status;
+    if (search) params.search = search;
+    if (minPrice) params.minPrice = minPrice;
+    if (maxPrice) params.maxPrice = maxPrice;
+    if (minArea) params.minArea = minArea;
+    if (maxArea) params.maxArea = maxArea;
     if (budgetRanges[budget]) {
       const [minPrice, maxPrice] = budgetRanges[budget];
       params.minPrice = minPrice;
       if (maxPrice !== undefined) params.maxPrice = maxPrice;
     }
 
+    const hasSearchFilters = [
+      'purpose',
+      'category',
+      'location',
+      'city',
+      'type',
+      'budget',
+      'status',
+      'search',
+      'minPrice',
+      'maxPrice',
+      'minArea',
+      'maxArea',
+    ].some((key) => searchParams.get(key)) || Boolean(cityPage);
+
     setLoading(true);
     setError('');
 
-    adminApi
-      .get('/properties', { params, signal: controller.signal })
-      .then(({ data }) => {
+    const request = hasSearchFilters ? propertyService.searchProperties : propertyService.getProperties;
+
+    request(params, { signal: controller.signal })
+      .then((data) => {
         setProperties((data.data || []).map(mapProperty));
         setTotal(data.total || 0);
         setPages(data.pages || 1);
@@ -142,7 +213,7 @@ export default function PropertiesPage() {
       });
 
     return () => controller.abort();
-  }, [currentPage, searchParams, sort]);
+  }, [cityPage, currentPage, searchParams, sort]);
 
   const updateParam = (key, value) => {
     const nextParams = new URLSearchParams(searchParams);
@@ -159,7 +230,21 @@ export default function PropertiesPage() {
     updateParam(group, current === value ? '' : value);
   };
 
-  const handleAreaChange = () => {};
+  const handleAreaChange = (key, value) => {
+    updateParam(key, value);
+  };
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('page');
+    ['search', 'minPrice', 'maxPrice'].forEach((key) => {
+      const value = formData.get(key)?.toString().trim();
+      if (value) nextParams.set(key, value);
+      else nextParams.delete(key);
+    });
+    setSearchParams(nextParams);
+  };
 
   const resetFilters = () => {
     setSearchParams({});
@@ -184,15 +269,15 @@ export default function PropertiesPage() {
       transition={{ duration: 0.35 }}
     >
       <SEO
-        title="Properties for Sale & Rent | P4 Properties Chandigarh Tricity"
-        description="Browse verified residential and commercial properties across Chandigarh, Mohali, Panchkula, New Chandigarh, Kharar, Kurali, and Rajpura with advanced filters and expert consultation."
-        canonical="/properties"
+        title={cityPage?.title || (searchParams.get('location') ? `${searchParams.get('location')} Properties | P4 Properties` : 'Properties for Sale & Rent | P4 Properties Chandigarh Tricity')}
+        description={cityPage?.description || 'Browse verified residential and commercial properties across Chandigarh, Mohali, Panchkula, New Chandigarh, Kharar, Kurali, and Rajpura with advanced filters and expert consultation.'}
+        canonical={cityPage ? location.pathname : '/properties'}
         structuredData={[breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Properties', path: '/properties' }])]}
       />
       <Navbar />
-      <PropertyHero />
+      <PropertyHero title={cityPage?.h1} subtitle={cityPage?.description} />
 
-      <section className="bg-ivory py-16">
+      <section className="bg-ivory py-12 md:py-16">
         <div className="container-p4 grid gap-8 lg:grid-cols-[320px_1fr]">
           <PropertyFilters
             filters={filters}
@@ -205,6 +290,33 @@ export default function PropertiesPage() {
           />
 
           <div>
+            <form onSubmit={handleSearchSubmit} className="mb-5 grid gap-3 rounded-xl border border-ink/10 bg-white p-4 shadow-soft sm:grid-cols-[1fr_auto]">
+              <div className="grid gap-3 md:grid-cols-3">
+                <input
+                  name="search"
+                  defaultValue={filters.search}
+                  className="min-h-12 rounded-xl border border-ink/10 px-4 py-3 font-semibold outline-none focus:border-gold"
+                  placeholder="Search by title, city, or description"
+                />
+                <input
+                  name="minPrice"
+                  defaultValue={searchParams.get('minPrice') || ''}
+                  className="min-h-12 rounded-xl border border-ink/10 px-4 py-3 font-semibold outline-none focus:border-gold"
+                  placeholder="Min price"
+                  inputMode="numeric"
+                />
+                <input
+                  name="maxPrice"
+                  defaultValue={searchParams.get('maxPrice') || ''}
+                  className="min-h-12 rounded-xl border border-ink/10 px-4 py-3 font-semibold outline-none focus:border-gold"
+                  placeholder="Max price"
+                  inputMode="numeric"
+                />
+              </div>
+              <button className="min-h-12 rounded-xl bg-gold px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-night" type="submit">
+                Search
+              </button>
+            </form>
             <PropertySortBar
               total={total}
               sort={sort}
@@ -259,7 +371,7 @@ export default function PropertiesPage() {
 
       <FeaturedProjects />
 
-      <section className="bg-night py-24">
+      <section className="bg-night py-16 md:py-24">
         <motion.div
           className="container-p4 text-center"
           initial={{ opacity: 0, y: 24 }}
@@ -275,14 +387,14 @@ export default function PropertiesPage() {
           />
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <a
-              href="mailto:info@p4properties.com"
-              className="bg-gold px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-night transition-colors hover:bg-white"
+              href="/site-visit"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-gold px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-night transition-colors hover:bg-white"
             >
               Schedule Site Visit
             </a>
             <a
               href="tel:+918195002006"
-              className="border border-white/40 px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-white transition-colors hover:border-gold hover:text-gold"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/40 px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-white transition-colors hover:border-gold hover:text-gold"
             >
               Call Us Today
             </a>
@@ -342,7 +454,7 @@ function EmptyState({ title, message, onReset }) {
       <button
         type="button"
         onClick={onReset}
-        className="mt-6 bg-gold px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-night"
+        className="mt-6 rounded-xl bg-gold px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-night"
       >
         Reset Filters
       </button>

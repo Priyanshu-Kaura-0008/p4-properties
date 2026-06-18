@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { FaBars, FaBell, FaChevronDown, FaSignOutAlt, FaTimes, FaUserCircle } from 'react-icons/fa';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 import { adminNavItems } from './adminNav';
 
 export default function AdminLayout() {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const navigate = useNavigate();
+  const { logout: clearAuth, currentUser } = useAuth();
 
   const logout = () => {
-    localStorage.removeItem('p4_admin_token');
-    sessionStorage.removeItem('p4_admin_token');
+    clearAuth();
     toast.success('Signed out');
     navigate('/admin/login');
   };
@@ -27,7 +28,7 @@ export default function AdminLayout() {
           <NavLink to="/admin" className="font-display text-2xl font-bold">
             P4 <span className="text-gold">Properties</span>
           </NavLink>
-          <button className="lg:hidden" type="button" onClick={() => setOpen(false)} aria-label="Close admin menu">
+          <button className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 lg:hidden" type="button" onClick={() => setOpen(false)} aria-label="Close admin menu">
             <FaTimes />
           </button>
         </div>
@@ -56,12 +57,12 @@ export default function AdminLayout() {
       <div className="lg:pl-72">
         <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-white/10 bg-[#111111]/90 px-4 shadow-[0_12px_40px_rgba(0,0,0,.28)] backdrop-blur-xl md:px-8">
           <div className="flex items-center gap-4">
-            <button type="button" className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 lg:hidden" onClick={() => setOpen(true)} aria-label="Open admin menu">
+            <button type="button" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 lg:hidden" onClick={() => setOpen(true)} aria-label="Open admin menu">
               <FaBars />
             </button>
             <div>
               <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-gold">Luxury Admin</p>
-              <h1 className="font-display text-2xl font-bold">Command Center</h1>
+              <h1 className="font-display text-xl font-bold sm:text-2xl">Command Center</h1>
             </div>
           </div>
 
@@ -71,12 +72,12 @@ export default function AdminLayout() {
             </button>
             <button
               type="button"
-              className="flex items-center gap-3 rounded-xl border border-white/10 bg-[#1A1A1A] px-3 py-2"
+              className="flex min-h-12 items-center gap-3 rounded-xl border border-white/10 bg-[#1A1A1A] px-3 py-2"
               onClick={() => setProfileOpen((value) => !value)}
               aria-expanded={profileOpen}
             >
               <FaUserCircle className="text-2xl text-gold" />
-              <span className="hidden text-sm font-bold md:inline">Admin</span>
+              <span className="hidden text-sm font-bold md:inline">{currentUser?.name || 'Admin'}</span>
               <FaChevronDown className="text-xs" />
             </button>
             {profileOpen && (

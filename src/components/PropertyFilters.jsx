@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';
 
 const filterGroups = {
@@ -25,11 +26,12 @@ const filterGroups = {
   ],
   bedrooms: ['1+', '2+', '3+', '4+', '5+'],
   amenities: ['Parking', 'Power Backup', 'Lift', 'Security', 'Clubhouse', 'Swimming Pool', 'Park'],
+  status: ['Available', 'Sold', 'Rented', 'Draft'],
 };
 
 function CheckOption({ label, name, checked, onChange }) {
   return (
-    <label className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-muted transition-colors hover:text-ink">
+    <label className="flex min-h-10 cursor-pointer items-center gap-3 text-sm font-semibold text-muted transition-colors hover:text-ink">
       <input
         type="checkbox"
         name={name}
@@ -60,7 +62,7 @@ function FilterContent({ filters, onToggle, onAreaChange, onReset, onApply, onCl
         {onClose && (
           <button
             type="button"
-            className="flex h-10 w-10 items-center justify-center border border-ink/10 text-ink"
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-ink/10 text-ink"
             onClick={onClose}
             aria-label="Close property filters"
           >
@@ -114,6 +116,18 @@ function FilterContent({ filters, onToggle, onAreaChange, onReset, onApply, onCl
               name="location"
               checked={filters.location.includes(item)}
               onChange={() => onToggle('location', item)}
+            />
+          ))}
+        </FilterGroup>
+
+        <FilterGroup title="Status">
+          {filterGroups.status.map((item) => (
+            <CheckOption
+              key={item}
+              label={item}
+              name="status"
+              checked={filters.status.includes(item)}
+              onChange={() => onToggle('status', item)}
             />
           ))}
         </FilterGroup>
@@ -188,14 +202,14 @@ function FilterContent({ filters, onToggle, onAreaChange, onReset, onApply, onCl
         <button
           type="button"
           onClick={onApply}
-          className="bg-gold px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-colors hover:bg-night hover:text-white"
+          className="min-h-12 rounded-xl bg-gold px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-colors hover:bg-night hover:text-white"
         >
           Apply Filters
         </button>
         <button
           type="button"
           onClick={onReset}
-          className="border border-ink/15 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-ink transition-colors hover:border-gold hover:text-gold"
+          className="min-h-12 rounded-xl border border-ink/15 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-ink transition-colors hover:border-gold hover:text-gold"
         >
           Reset Filters
         </button>
@@ -214,9 +228,18 @@ function FilterGroup({ title, children }) {
 }
 
 export default function PropertyFilters({ filters, onToggle, onAreaChange, onReset, onApply, isOpen, onClose }) {
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
   return (
     <>
-      <aside className="sticky top-24 hidden max-h-[calc(100vh-120px)] rounded-md border border-ink/10 bg-white shadow-soft lg:block">
+      <aside className="sticky top-24 hidden max-h-[calc(100vh-120px)] rounded-2xl border border-ink/10 bg-white shadow-soft lg:block">
         <FilterContent
           filters={filters}
           onToggle={onToggle}

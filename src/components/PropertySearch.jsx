@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { FaChevronDown, FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { locationOptions } from '../data/siteData';
 
 const selectBase =
-  'h-12 w-full border border-ink/10 bg-white px-4 text-sm font-semibold text-ink outline-none transition focus:border-gold';
+  'h-10 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm font-semibold text-gray-500 outline-none transition placeholder:text-neutral-500 focus:border-gold focus:ring-2 focus:ring-gold/15 md:h-12';
 
 const budgetOptions = [
   { label: 'Under Rs. 50 Lakhs', value: 'Under Rs. 50 Lakhs' },
@@ -25,10 +25,13 @@ export default function PropertySearch() {
     budget: '',
     type: '',
   });
+  const [showMobileAdvanced, setShowMobileAdvanced] = useState(false);
 
   const updateFilter = (field, value) => {
     setFilters((current) => ({ ...current, [field]: value }));
   };
+
+  const selectClass = () => selectBase;
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -42,94 +45,109 @@ export default function PropertySearch() {
   };
 
   return (
-    <section id="search" className="relative z-20 -mt-24 pb-16">
+    <section id="search" className="relative z-20 -mt-12 pb-10 md:-mt-24 md:pb-16">
       <div className="container-p4">
         <form
           onSubmit={handleSubmit}
-          className="grid gap-4 rounded-md bg-white p-5 shadow-premium md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr_1fr_1fr_auto] lg:p-6"
+          className="grid gap-4 rounded-2xl border border-ink/10 bg-white p-4 shadow-premium sm:p-5 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr_1fr_1fr_auto] lg:items-end lg:p-6"
         >
-          <label className="sr-only" htmlFor="property-search-purpose">
-            Buy or rent
-          </label>
-          <select
-            id="property-search-purpose"
-            className={selectBase}
-            value={filters.purpose}
-            onChange={(event) => updateFilter('purpose', event.target.value)}
-          >
-            <option>Buy</option>
-            <option>Rent</option>
-          </select>
+          <div className={`${showMobileAdvanced ? 'grid' : 'hidden'} gap-4 md:grid md:contents`}>
+          <Field label="Purpose" htmlFor="property-search-purpose">
+            <select
+              id="property-search-purpose"
+              className={selectClass('purpose')}
+              value={filters.purpose}
+              onChange={(event) => updateFilter('purpose', event.target.value)}
+            >
+              <option>Buy</option>
+              <option>Rent</option>
+            </select>
+          </Field>
 
-          <label className="sr-only" htmlFor="property-search-category">
-            Property category
-          </label>
-          <select
-            id="property-search-category"
-            className={selectBase}
-            value={filters.category}
-            onChange={(event) => updateFilter('category', event.target.value)}
-          >
-            <option>Residential</option>
-            <option>Commercial</option>
-          </select>
+          <Field label="Category" htmlFor="property-search-category">
+            <select
+              id="property-search-category"
+              className={selectClass('category')}
+              value={filters.category}
+              onChange={(event) => updateFilter('category', event.target.value)}
+            >
+              <option>Residential</option>
+              <option>Commercial</option>
+            </select>
+          </Field>
+          </div>
 
-          <label className="sr-only" htmlFor="property-search-location">
-            Location
-          </label>
-          <select
-            id="property-search-location"
-            className={selectBase}
-            value={filters.location}
-            onChange={(event) => updateFilter('location', event.target.value)}
-          >
-            <option value="">Location</option>
-            {locationOptions.map((location) => (
-              <option key={location}>{location}</option>
-            ))}
-          </select>
+          <Field label="Location" htmlFor="property-search-location">
+            <select
+              id="property-search-location"
+              className={selectClass('location')}
+              value={filters.location}
+              onChange={(event) => updateFilter('location', event.target.value)}
+            >
+              <option value="">Select Location</option>
+              {locationOptions.map((location) => (
+                <option key={location}>{location}</option>
+              ))}
+            </select>
+          </Field>
 
-          <label className="sr-only" htmlFor="property-search-budget">
-            Budget
-          </label>
-          <select
-            id="property-search-budget"
-            className={selectBase}
-            value={filters.budget}
-            onChange={(event) => updateFilter('budget', event.target.value)}
-          >
-            <option value="">Budget</option>
-            {budgetOptions.map((budget) => (
-              <option key={budget.value} value={budget.value}>
-                {budget.label}
-              </option>
-            ))}
-          </select>
+          <Field label="Budget" htmlFor="property-search-budget">
+            <select
+              id="property-search-budget"
+              className={selectClass('budget')}
+              value={filters.budget}
+              onChange={(event) => updateFilter('budget', event.target.value)}
+            >
+              <option value="">Select Budget</option>
+              {budgetOptions.map((budget) => (
+                <option key={budget.value} value={budget.value}>
+                  {budget.label}
+                </option>
+              ))}
+            </select>
+          </Field>
 
-          <label className="sr-only" htmlFor="property-search-type">
-            Property type
-          </label>
-          <select
-            id="property-search-type"
-            className={selectBase}
-            value={filters.type}
-            onChange={(event) => updateFilter('type', event.target.value)}
-          >
-            <option value="">Property Type</option>
-            {propertyTypes.map((type) => (
-              <option key={type}>{type}</option>
-            ))}
-          </select>
+          <Field label="Property Type" htmlFor="property-search-type">
+            <select
+              id="property-search-type"
+              className={selectClass('type')}
+              value={filters.type}
+              onChange={(event) => updateFilter('type', event.target.value)}
+            >
+              <option value="">Select Type</option>
+              {propertyTypes.map((type) => (
+                <option key={type}>{type}</option>
+              ))}
+            </select>
+          </Field>
 
           <button
             type="submit"
-            className="inline-flex h-12 items-center justify-center gap-3 bg-gold px-7 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-colors hover:bg-night hover:text-white"
+            className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-gold px-7 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-colors hover:bg-night hover:text-white"
           >
             <FaSearch aria-hidden="true" />
             Search
           </button>
+          <button
+            type="button"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-ink/10 text-xs font-extrabold uppercase tracking-[0.12em] text-muted md:hidden"
+            onClick={() => setShowMobileAdvanced((value) => !value)}
+            aria-expanded={showMobileAdvanced}
+          >
+            More Options
+            <FaChevronDown className={`transition-transform ${showMobileAdvanced ? 'rotate-180' : ''}`} aria-hidden="true" />
+          </button>
         </form>
       </div>
     </section>
+  );
+}
+
+function Field({ label, htmlFor, children }) {
+  return (
+    <label htmlFor={htmlFor} className="grid gap-2 text-xs font-extrabold uppercase tracking-[0.12em] text-muted sm:tracking-[0.16em]">
+      {label}
+      {children}
+    </label>
   );
 }

@@ -61,6 +61,9 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     latestProperties,
     propertyDistributionByType,
     propertyDistributionByCity,
+    inquiriesByStatus,
+    inquiriesBySource,
+    siteVisitsBySource,
   ] = await Promise.all([
     Property.countDocuments(),
     Property.countDocuments({ featured: true }),
@@ -75,7 +78,12 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
     Property.find().sort('-createdAt').limit(6).select(recentPropertyFields),
     Property.aggregate(distributionPipeline('propertyType')),
     Property.aggregate(distributionPipeline('city')),
+    Inquiry.aggregate(distributionPipeline('status')),
+    Inquiry.aggregate(distributionPipeline('leadSource')),
+    SiteVisit.aggregate(distributionPipeline('leadSource')),
   ]);
+
+  const leadToVisitConversionRate = totalInquiries ? Number(((totalSiteVisits / totalInquiries) * 100).toFixed(1)) : 0;
 
   sendSuccess(res, {
     data: {
@@ -92,6 +100,10 @@ export const getDashboardAnalytics = asyncHandler(async (req, res) => {
       latestProperties,
       propertyDistributionByType,
       propertyDistributionByCity,
+      inquiriesByStatus,
+      inquiriesBySource,
+      siteVisitsBySource,
+      leadToVisitConversionRate,
     },
   });
 });

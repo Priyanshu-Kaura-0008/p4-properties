@@ -1,6 +1,8 @@
 import SiteVisit from '../models/SiteVisit.js';
 import ApiError from '../utils/apiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { assignLeadOwner } from '../services/assignmentService.js';
+import { notifySiteVisitBooked } from '../services/notificationService.js';
 
 const propertyFields = 'title slug city locality price purpose propertyType';
 
@@ -11,6 +13,7 @@ const buildSiteVisitFilter = (query) => {
   if (query.property) filter.property = query.property;
   if (query.preferredLocation) filter.preferredLocation = query.preferredLocation;
   if (query.propertyType) filter.propertyType = query.propertyType;
+  if (query.leadSource) filter.leadSource = query.leadSource;
 
   if (query.fromDate || query.toDate) {
     filter.preferredDate = {};
@@ -43,6 +46,7 @@ const getSort = (sort) => {
 };
 
 export const createSiteVisit = asyncHandler(async (req, res) => {
+  const assignedAgent = req.body.assignedAgent || assignLeadOwner({ preferredLocation: req.body.preferredLocation });
   const visit = await SiteVisit.create({
     property: req.body.property,
     name: req.body.name,
@@ -54,8 +58,13 @@ export const createSiteVisit = asyncHandler(async (req, res) => {
     propertyType: req.body.propertyType,
     preferredDate: req.body.preferredDate,
     preferredTime: req.body.preferredTime || 'Flexible',
+    leadSource: req.body.leadSource || 'website',
+    assignedAgent,
+    followUpDate: req.body.followUpDate,
     remarks: req.body.remarks,
   });
+
+  notifySiteVisitBooked(visit).catch(() => null);
 
   res.status(201).json({ success: true, data: visit });
 });
@@ -100,6 +109,9 @@ export const updateSiteVisit = asyncHandler(async (req, res) => {
     'preferredDate',
     'preferredTime',
     'status',
+    'leadSource',
+    'assignedAgent',
+    'followUpDate',
     'remarks',
   ];
   const updates = {};

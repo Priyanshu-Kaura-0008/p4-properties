@@ -18,7 +18,7 @@ export default function AboutPage() {
       <Navbar />
       <section className="bg-night px-4 pb-16 pt-32 text-center text-white">
         <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-gold">About P4 Properties</p>
-        <h1 className="font-display text-5xl font-bold md:text-7xl">Trusted Real Estate Guidance</h1>
+        <h1 className="font-display text-4xl font-bold sm:text-5xl md:text-7xl">Trusted Real Estate Guidance</h1>
       </section>
       <AboutUs />
       <FoundersSection />

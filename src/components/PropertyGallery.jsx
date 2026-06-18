@@ -14,8 +14,15 @@ export default function PropertyGallery({ property }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [fullscreenImage, setFullscreenImage] = useState(null);
   const images = useMemo(
-    () => (property.images?.length ? property.images.map((image) => image.url) : [fallbackImage]),
-    [property.images],
+    () => {
+      const gallery = [
+        property.mainImage?.url,
+        ...(property.galleryImages || []).map((image) => image.url),
+        ...(property.images || []).map((image) => image.url),
+      ].filter(Boolean);
+      return gallery.length ? [...new Set(gallery)] : [fallbackImage];
+    },
+    [property.galleryImages, property.images, property.mainImage],
   );
 
   return (
@@ -26,7 +33,7 @@ export default function PropertyGallery({ property }) {
           navigation
           loop={images.length > 1}
           thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-          className="h-[68vh] min-h-[430px] w-full"
+          className="h-[58vh] min-h-[360px] w-full md:h-[68vh] md:min-h-[430px]"
         >
           {images.map((image, index) => (
             <SwiperSlide key={`${image}-${index}`}>
@@ -52,19 +59,19 @@ export default function PropertyGallery({ property }) {
         </Swiper>
 
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-night/70 via-transparent to-night/35" />
-        <div className="absolute bottom-8 left-4 z-10 max-w-4xl md:left-8">
+        <div className="absolute bottom-6 left-4 right-4 z-10 max-w-4xl md:bottom-8 md:left-8 md:right-auto">
           <div className="mb-4 flex flex-wrap gap-2">
             {property.featured && <Badge label="Featured" gold />}
             <Badge label={property.status || 'Available'} />
             <Badge label={property.propertyType} />
           </div>
-          <h1 className="font-display text-4xl font-bold leading-tight text-white md:text-6xl">{property.title}</h1>
+          <h1 className="font-display text-3xl font-bold leading-tight text-white sm:text-4xl md:text-6xl">{property.title}</h1>
         </div>
 
         <button
           type="button"
           onClick={() => setFullscreenImage(images[0])}
-          className="absolute right-5 top-6 z-10 flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-night shadow-soft transition-colors hover:bg-gold"
+          className="absolute right-4 top-5 z-10 flex min-h-12 items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-night shadow-soft transition-colors hover:bg-gold md:right-5 md:top-6"
         >
           <FaExpand aria-hidden="true" />
           View Gallery
@@ -83,7 +90,7 @@ export default function PropertyGallery({ property }) {
         >
           {images.map((image, index) => (
             <SwiperSlide key={`${image}-thumb-${index}`}>
-              <button className="h-20 w-full overflow-hidden rounded-xl border border-white/15" type="button">
+              <button className="h-16 w-full overflow-hidden rounded-xl border border-white/15 md:h-20" type="button">
                 <img src={image} alt={`${property.title} thumbnail ${index + 1}`} loading="lazy" decoding="async" className="h-full w-full object-cover" />
               </button>
             </SwiperSlide>
@@ -120,7 +127,7 @@ export default function PropertyGallery({ property }) {
 
 function Badge({ label, gold = false }) {
   return (
-    <span className={`${gold ? 'bg-gold text-night' : 'bg-white/90 text-ink'} rounded-full px-4 py-2 text-xs font-extrabold uppercase tracking-[0.14em]`}>
+    <span className={`${gold ? 'bg-gold text-night' : 'bg-white/90 text-ink'} rounded-full px-3 py-2 text-[11px] font-extrabold uppercase tracking-[0.1em] sm:px-4 sm:text-xs sm:tracking-[0.14em]`}>
       {label}
     </span>
   );

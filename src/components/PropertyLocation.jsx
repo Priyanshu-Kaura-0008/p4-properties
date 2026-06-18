@@ -2,9 +2,12 @@ import { motion } from 'framer-motion';
 import { FaDirections, FaMapMarkerAlt } from 'react-icons/fa';
 
 export default function PropertyLocation({ property }) {
-  const query = encodeURIComponent([property.address, property.locality, property.city].filter(Boolean).join(', '));
-  const mapUrl = `https://maps.google.com/maps?q=${query}&z=13&output=embed`;
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${query}`;
+  const locationText = [property.address, property.location || property.locality, property.city].filter(Boolean).join(', ');
+  const query = encodeURIComponent(locationText);
+  const mapUrl = property.googleMapLink?.includes('/embed')
+    ? property.googleMapLink
+    : `https://maps.google.com/maps?q=${query}&z=13&output=embed`;
+  const directionsUrl = property.googleMapLink || `https://www.google.com/maps/dir/?api=1&destination=${query}`;
 
   return (
     <motion.section
@@ -17,7 +20,7 @@ export default function PropertyLocation({ property }) {
       <h2 className="font-display text-3xl font-bold text-ink">Location</h2>
       <p className="mt-3 flex items-center gap-2 leading-8 text-muted">
         <FaMapMarkerAlt className="text-gold" aria-hidden="true" />
-        {[property.address, property.locality, property.city].filter(Boolean).join(', ')}
+        {locationText}
       </p>
       <div className="mt-6 overflow-hidden rounded-2xl border border-ink/10">
         <iframe

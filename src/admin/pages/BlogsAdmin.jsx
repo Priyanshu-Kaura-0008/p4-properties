@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import adminApi from '../../api/adminApi';
+import blogService from '../../services/blogService';
 import AdminTable from '../components/AdminTable';
 import ConfirmModal from '../components/ConfirmModal';
 import PageHeader from '../components/PageHeader';
@@ -12,11 +12,11 @@ export default function BlogsAdmin() {
   const [blogs, setBlogs] = useState([]);
   const [deleteId, setDeleteId] = useState(null);
 
-  const load = () => adminApi.get('/blogs', { params: { limit: 50 } }).then(({ data }) => setBlogs(data.data || []));
+  const load = () => blogService.getBlogs({ limit: 50 }).then((data) => setBlogs(data.data || []));
   useEffect(() => { load(); }, []);
 
   const remove = async () => {
-    await adminApi.delete(`/blogs/${deleteId}`);
+    await blogService.deleteBlog(deleteId);
     toast.success('Blog deleted');
     setDeleteId(null);
     load();

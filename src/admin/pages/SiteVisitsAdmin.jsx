@@ -1,26 +1,29 @@
 import { useEffect, useState } from 'react';
 import { FaCheck, FaTrash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
-import adminApi from '../../api/adminApi';
+import siteVisitService from '../../services/siteVisitService';
 import AdminTable from '../components/AdminTable';
 import ConfirmModal from '../components/ConfirmModal';
 import PageHeader from '../components/PageHeader';
 import StatusBadge from '../components/StatusBadge';
 
+const leadSources = ['website', 'whatsapp', 'phone', 'google_ads', 'meta_ads', 'facebook', 'instagram', 'referral', 'walk_in', 'other'];
+
 export default function SiteVisitsAdmin() {
   const [items, setItems] = useState([]);
+  const [leadSource, setLeadSource] = useState('');
   const [deleteId, setDeleteId] = useState(null);
-  const load = () => adminApi.get('/site-visits', { params: { limit: 50 } }).then(({ data }) => setItems(data.data || []));
-  useEffect(() => { load(); }, []);
+  const load = () => siteVisitService.getSiteVisits({ leadSource, limit: 50 }).then((data) => setItems(data.data || []));
+  useEffect(() => { load(); }, [leadSource]);
 
   const confirmVisit = async (id) => {
-    await adminApi.put(`/site-visits/${id}`, { status: 'confirmed' });
+    await siteVisitService.updateSiteVisit(id, { status: 'confirmed' });
     toast.success('Site visit confirmed');
     load();
   };
 
   const remove = async () => {
-    await adminApi.delete(`/site-visits/${deleteId}`);
+    await siteVisitService.deleteSiteVisit(deleteId);
     toast.success('Site visit deleted');
     setDeleteId(null);
     load();
@@ -32,6 +35,7 @@ export default function SiteVisitsAdmin() {
     { key: 'preferredLocation', label: 'Location', render: (i) => i.preferredLocation || '-' },
     { key: 'budget', label: 'Budget', render: (i) => i.budget || '-' },
     { key: 'propertyType', label: 'Type', render: (i) => i.propertyType || '-' },
+    { key: 'leadSource', label: 'Source', render: (i) => <span className="capitalize">{String(i.leadSource || 'website').replace(/_/g, ' ')}</span> },
     { key: 'property', label: 'Property', render: (i) => i.property?.title || 'General' },
     { key: 'address', label: 'Address', render: (i) => i.address || '-' },
     { key: 'date', label: 'Visit Date', render: (i) => `${new Date(i.preferredDate).toLocaleDateString()} ${i.preferredTime || ''}` },
@@ -47,6 +51,12 @@ export default function SiteVisitsAdmin() {
   return (
     <div>
       <PageHeader title="Site Visits" subtitle="Track private property visit requests." />
+      <div className="mb-5">
+        <select value={leadSource} onChange={(e) => setLeadSource(e.target.value)} className="rounded-xl border border-white/10 bg-[#1A1A1A] px-4 py-3 text-white outline-none focus:border-gold">
+          <option value="">All Sources</option>
+          {leadSources.map((option) => <option key={option} value={option}>{option.replace(/_/g, ' ')}</option>)}
+        </select>
+      </div>
       <AdminTable columns={columns} rows={items} />
       <ConfirmModal open={Boolean(deleteId)} title="Delete site visit?" message="This booking will be permanently removed." confirmLabel="Delete" onConfirm={remove} onCancel={() => setDeleteId(null)} />
     </div>

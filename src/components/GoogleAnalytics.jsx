@@ -7,6 +7,7 @@ export default function GoogleAnalytics() {
   const location = useLocation();
 
   useEffect(() => {
+    // GA4 integration point: set VITE_GA_MEASUREMENT_ID in production when analytics is approved.
     if (!measurementId || window.gtag) return;
 
     const script = document.createElement('script');

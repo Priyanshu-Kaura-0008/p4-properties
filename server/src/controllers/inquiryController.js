@@ -1,6 +1,8 @@
 import Inquiry from '../models/Inquiry.js';
 import ApiError from '../utils/apiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { assignLeadOwner } from '../services/assignmentService.js';
+import { notifyInquirySubmitted } from '../services/notificationService.js';
 
 const propertyFields = 'title slug city locality price purpose propertyType';
 
@@ -9,6 +11,8 @@ const buildInquiryFilter = (query) => {
 
   if (query.status) filter.status = query.status;
   if (query.property) filter.property = query.property;
+  if (query.leadSource) filter.leadSource = query.leadSource;
+  if (query.preferredLocation) filter.preferredLocation = query.preferredLocation;
 
   if (query.search) {
     filter.$text = { $search: query.search };
@@ -35,13 +39,21 @@ const getSort = (sort) => {
 };
 
 export const createInquiry = asyncHandler(async (req, res) => {
+  const assignedAgent = req.body.assignedAgent || assignLeadOwner({ preferredLocation: req.body.preferredLocation });
   const inquiry = await Inquiry.create({
     name: req.body.name,
     phone: req.body.phone,
     email: req.body.email,
     message: req.body.message,
     property: req.body.property,
+    leadSource: req.body.leadSource || 'website',
+    budget: req.body.budget,
+    preferredLocation: req.body.preferredLocation,
+    assignedAgent,
+    followUpDate: req.body.followUpDate,
   });
+
+  notifyInquirySubmitted(inquiry).catch(() => null);
 
   res.status(201).json({ success: true, data: inquiry });
 });
@@ -74,7 +86,20 @@ export const getInquiryById = asyncHandler(async (req, res) => {
 });
 
 export const updateInquiry = asyncHandler(async (req, res) => {
-  const allowedUpdates = ['name', 'phone', 'email', 'message', 'property', 'status', 'notes'];
+  const allowedUpdates = [
+    'name',
+    'phone',
+    'email',
+    'message',
+    'property',
+    'status',
+    'leadSource',
+    'budget',
+    'preferredLocation',
+    'assignedAgent',
+    'followUpDate',
+    'notes',
+  ];
   const updates = {};
 
   allowedUpdates.forEach((field) => {

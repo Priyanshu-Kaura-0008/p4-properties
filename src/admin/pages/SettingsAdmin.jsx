@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import adminApi from '../../api/adminApi';
+import settingService from '../../services/settingService';
 import PageHeader from '../components/PageHeader';
 
 const input = 'w-full rounded-xl border border-white/10 bg-[#1A1A1A] px-4 py-3 text-white outline-none placeholder:text-white/35 focus:border-gold';
@@ -10,8 +10,7 @@ export default function SettingsAdmin() {
   const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm();
 
   useEffect(() => {
-    adminApi.get('/settings').then(({ data }) => {
-      const settings = data.data || {};
+    settingService.getSettings().then((settings) => {
       reset({
         phone: settings.phone,
         email: settings.email,
@@ -26,7 +25,7 @@ export default function SettingsAdmin() {
   }, [reset]);
 
   const submit = async (values) => {
-    await adminApi.put('/settings', {
+    await settingService.updateSettings({
       phone: values.phone,
       email: values.email,
       officeAddress: values.officeAddress,

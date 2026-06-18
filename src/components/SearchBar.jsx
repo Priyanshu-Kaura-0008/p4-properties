@@ -1,19 +1,33 @@
 import { FaSearch } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import { locationOptions } from '../data/siteData';
 
 const selectBase =
-  'h-12 w-full border border-ink/10 bg-white px-4 text-sm font-semibold text-ink outline-none transition focus:border-gold';
+  'h-12 w-full rounded-xl border border-ink/10 bg-white px-4 text-sm font-semibold text-ink outline-none transition focus:border-gold';
 
 export default function SearchBar() {
+  const navigate = useNavigate();
+
+  const submit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const params = new URLSearchParams();
+    ['purpose', 'category', 'location', 'budget', 'type'].forEach((key) => {
+      const value = formData.get(key);
+      if (value) params.set(key, value);
+    });
+    navigate(`/properties?${params.toString()}`);
+  };
+
   return (
-    <section id="search" className="relative z-20 -mt-24 pb-16">
+    <section id="search" className="relative z-20 -mt-20 pb-12 md:-mt-24 md:pb-16">
       {/* Floating property search card */}
       <div className="container-p4">
-        <form className="grid gap-4 rounded-md bg-white p-5 shadow-premium md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr_1fr_1fr_auto] lg:p-6">
+        <form onSubmit={submit} className="grid gap-4 rounded-2xl bg-white p-4 shadow-premium sm:p-5 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr_1fr_1fr_auto] lg:p-6">
           <label className="sr-only" htmlFor="intent">
             Transaction type
           </label>
-          <select id="intent" className={selectBase} defaultValue="Buy">
+          <select id="intent" name="purpose" className={selectBase} defaultValue="Buy">
             <option>Buy</option>
             <option>Sell</option>
           </select>
@@ -21,7 +35,7 @@ export default function SearchBar() {
           <label className="sr-only" htmlFor="category">
             Property category
           </label>
-          <select id="category" className={selectBase} defaultValue="Residential">
+          <select id="category" name="category" className={selectBase} defaultValue="Residential">
             <option>Residential</option>
             <option>Commercial</option>
           </select>
@@ -29,7 +43,7 @@ export default function SearchBar() {
           <label className="sr-only" htmlFor="location">
             Location
           </label>
-          <select id="location" className={selectBase} defaultValue="">
+          <select id="location" name="location" className={selectBase} defaultValue="">
             <option value="" disabled>
               Location
             </option>
@@ -41,7 +55,7 @@ export default function SearchBar() {
           <label className="sr-only" htmlFor="budget">
             Budget
           </label>
-          <select id="budget" className={selectBase} defaultValue="">
+          <select id="budget" name="budget" className={selectBase} defaultValue="">
             <option value="" disabled>
               Budget
             </option>
@@ -54,7 +68,7 @@ export default function SearchBar() {
           <label className="sr-only" htmlFor="type">
             Property type
           </label>
-          <select id="type" className={selectBase} defaultValue="">
+          <select id="type" name="type" className={selectBase} defaultValue="">
             <option value="" disabled>
               Property Type
             </option>
@@ -67,7 +81,7 @@ export default function SearchBar() {
 
           <button
             type="submit"
-            className="inline-flex h-12 items-center justify-center gap-3 bg-gold px-7 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-colors hover:bg-night hover:text-white"
+            className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-gold px-7 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-colors hover:bg-night hover:text-white"
           >
             <FaSearch aria-hidden="true" />
             Search

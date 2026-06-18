@@ -1,9 +1,11 @@
+import { COMPANY_INFO } from '../constants/companyInfo';
+
 export const siteUrl = (import.meta.env.VITE_SITE_URL || 'https://p4properties.in').replace(/\/$/, '');
 
 export const defaultSeo = {
-  title: 'P4 Properties | Property Dealer Chandigarh & Tricity Real Estate Consultant',
+  title: `${COMPANY_INFO.companyName} | Property Dealer Chandigarh & Tricity Real Estate Consultant`,
   description:
-    'P4 Properties is a trusted property consultant in Chandigarh for luxury homes, residential properties, commercial properties, and real estate investment across Mohali, Panchkula, New Chandigarh, Kharar, Kurali, and Rajpura.',
+    `${COMPANY_INFO.companyName} is a trusted property consultant in Chandigarh for luxury homes, residential properties, commercial properties, and real estate investment across Mohali, Panchkula, New Chandigarh, Kharar, Kurali, and Rajpura.`,
   keywords:
     'Property Dealer Chandigarh, Real Estate Mohali, Property Investment New Chandigarh, Luxury Homes Panchkula, Property Consultant Chandigarh, Residential Properties Mohali, Commercial Properties Chandigarh',
   image:
@@ -20,19 +22,20 @@ export const locationSlug = (location) => location.toLowerCase().replace(/&/g, '
 export const realEstateAgentSchema = {
   '@context': 'https://schema.org',
   '@type': 'RealEstateAgent',
-  name: 'P4 Properties',
+  name: COMPANY_INFO.companyName,
   url: siteUrl,
-  telephone: '+918195002006',
-  email: 'info@p4properties.com',
+  telephone: COMPANY_INFO.primaryPhone.replace(/\s/g, ''),
+  email: COMPANY_INFO.email,
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'Chandigarh',
-    addressRegion: 'Chandigarh',
+    streetAddress: COMPANY_INFO.officeAddress,
+    addressLocality: 'Zirakpur',
+    addressRegion: 'Punjab',
     addressCountry: 'IN',
   },
-  areaServed: ['Chandigarh', 'Mohali', 'Panchkula', 'Kharar', 'Kurali', 'Panchkula Extension', 'New Chandigarh', 'Rajpura'],
+  areaServed: COMPANY_INFO.serviceAreas,
   description: defaultSeo.description,
-  sameAs: ['https://instagram.com', 'https://facebook.com', 'https://linkedin.com', 'https://youtube.com'],
+  sameAs: Object.values(COMPANY_INFO.social).filter(Boolean),
 };
 
 export const breadcrumbSchema = (items) => ({

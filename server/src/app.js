@@ -12,12 +12,16 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import inquiryRoutes from './routes/inquiryRoutes.js';
+import investorRoutes from './routes/investorRoutes.js';
 import propertyRoutes from './routes/propertyRoutes.js';
+import propertyAlertRoutes from './routes/propertyAlertRoutes.js';
 import siteVisitRoutes from './routes/siteVisitRoutes.js';
 import settingRoutes from './routes/settingRoutes.js';
 import testimonialRoutes from './routes/testimonialRoutes.js';
 import testRoutes from './routes/testRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import documentRoutes from './routes/documentRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
 
 const app = express();
 
@@ -76,7 +80,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/inquiries', inquiryRoutes);
+app.use('/api/investors', investorRoutes);
+app.use('/api/property-alerts', propertyAlertRoutes);
 app.use('/api/site-visits', siteVisitRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/reports', reportRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/test', testRoutes);

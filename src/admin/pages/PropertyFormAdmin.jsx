@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
-import adminApi from '../../api/adminApi';
+import ImageUploader from '../../components/common/ImageUploader';
+import propertyService from '../../services/propertyService';
 import PageHeader from '../components/PageHeader';
 
 const input = 'w-full rounded-xl border border-white/10 bg-[#1A1A1A] px-4 py-3 text-white outline-none placeholder:text-white/35 focus:border-gold';
@@ -10,14 +11,15 @@ const input = 'w-full rounded-xl border border-white/10 bg-[#1A1A1A] px-4 py-3 t
 export default function PropertyFormAdmin() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm({
+  const { register, handleSubmit, reset, setValue, watch, formState: { isSubmitting } } = useForm({
     defaultValues: { purpose: 'Buy', category: 'Residential', status: 'Available', areaUnit: 'Sq.ft.' },
   });
+  const mainImageFiles = watch('mainImageFiles') || [];
+  const galleryImageFiles = watch('galleryImageFiles') || [];
 
   useEffect(() => {
     if (id) {
-      adminApi.get(`/properties/id/${id}`).then(({ data }) => {
-        const property = data.data;
+      propertyService.getPropertyById(id).then((property) => {
         reset({ ...property, amenities: property.amenities?.join(', ') });
       });
     }
@@ -27,13 +29,14 @@ export default function PropertyFormAdmin() {
     const formData = new FormData();
     values.featured = values.featured ? 'true' : 'false';
     Object.entries(values).forEach(([key, value]) => {
-      if (key !== 'images' && key !== 'floorPlans' && value !== undefined) formData.append(key, value);
+      if (!['images', 'floorPlans', 'mainImageFiles', 'galleryImageFiles'].includes(key) && value !== undefined) formData.append(key, value);
     });
-    Array.from(values.images || []).forEach((file) => formData.append('images', file));
-    Array.from(values.floorPlans || []).forEach((file) => formData.append('images', file));
+    Array.from(values.mainImageFiles || []).forEach((file) => formData.append('mainImage', file));
+    Array.from(values.galleryImageFiles || []).forEach((file) => formData.append('galleryImages', file));
+    Array.from(values.images || []).forEach((file) => formData.append('galleryImages', file));
 
-    if (id) await adminApi.put(`/properties/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-    else await adminApi.post('/properties', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    if (id) await propertyService.updateProperty(id, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    else await propertyService.createProperty(formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     toast.success(id ? 'Property updated' : 'Property created');
     navigate('/admin/properties');
   };
@@ -45,7 +48,7 @@ export default function PropertyFormAdmin() {
         <Field label="Title"><input className={input} {...register('title', { required: true })} /></Field>
         <Field label="Price"><input className={input} type="number" {...register('price', { required: true })} /></Field>
         <Field label="City"><input className={input} {...register('city', { required: true })} /></Field>
-        <Field label="Locality"><input className={input} {...register('locality', { required: true })} /></Field>
+        <Field label="Location"><input className={input} {...register('location', { required: true })} /></Field>
         <Field label="Address" span><input className={input} {...register('address', { required: true })} /></Field>
         <Field label="Purpose"><select className={input} {...register('purpose')}><option>Buy</option><option>Sale</option><option>Sell</option><option>Rent</option></select></Field>
         <Field label="Category"><select className={input} {...register('category')}><option>Residential</option><option>Commercial</option></select></Field>
@@ -54,10 +57,11 @@ export default function PropertyFormAdmin() {
         <Field label="Bedrooms"><input className={input} type="number" {...register('bedrooms')} /></Field>
         <Field label="Bathrooms"><input className={input} type="number" {...register('bathrooms')} /></Field>
         <Field label="Parking"><input className={input} type="number" {...register('parking')} /></Field>
-        <Field label="Land Area"><input className={input} type="number" {...register('landArea', { required: true })} /></Field>
+        <Field label="Area"><input className={input} type="number" {...register('area')} /></Field>
         <Field label="Area Unit"><input className={input} {...register('areaUnit', { required: true })} /></Field>
-        <Field label="Gallery Images"><input className={input} type="file" multiple accept="image/*" {...register('images')} /></Field>
-        <Field label="Floor Plans"><input className={input} type="file" multiple accept="image/*,.pdf" {...register('floorPlans')} /></Field>
+        <Field label="Main Image" span><ImageUploader multiple={false} value={mainImageFiles} onChange={(files) => setValue('mainImageFiles', files)} label="Upload main image" /></Field>
+        <Field label="Gallery Images" span><ImageUploader value={galleryImageFiles} onChange={(files) => setValue('galleryImageFiles', files)} label="Upload gallery images" /></Field>
+        <Field label="Google Map Link" span><input className={input} {...register('googleMapLink')} /></Field>
         <Field label="Amenities" span><textarea className={input} rows="3" placeholder="Comma separated" {...register('amenities')} /></Field>
         <Field label="Description" span><textarea className={input} rows="6" {...register('description', { required: true })} /></Field>
         <label className="flex items-center gap-3 font-bold text-white md:col-span-2">

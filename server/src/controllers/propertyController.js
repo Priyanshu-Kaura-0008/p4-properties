@@ -4,6 +4,7 @@ import ApiError from '../utils/apiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { buildPropertyQuery, getPagination, getSort } from '../utils/queryFeatures.js';
 import slugify from 'slugify';
+import { notifyMatchingPropertyAlerts } from '../services/propertyAlertService.js';
 
 const normalizeArray = (value) => {
   if (!value) return [];
@@ -22,6 +23,28 @@ const normalizeArray = (value) => {
     .map((item) => item.trim())
     .filter(Boolean);
 };
+
+const normalizeImage = (value) => {
+  if (!value) return undefined;
+  let image = value;
+  if (typeof value === 'string') {
+    try {
+      image = JSON.parse(value);
+    } catch {
+      image = { url: value };
+    }
+  }
+  if (!image?.url) return undefined;
+
+  return {
+    url: image.url,
+    publicId: image.publicId || `external/${slugify(image.url, { lower: true, strict: true }).slice(0, 80)}`,
+    width: image.width,
+    height: image.height,
+  };
+};
+
+const normalizeImages = (value) => normalizeArray(value).map(normalizeImage).filter(Boolean);
 
 const toNumber = (value, fallback = 0) => {
   if (value === undefined || value === null || value === '') return fallback;
@@ -48,9 +71,18 @@ const deleteCloudinaryImages = async (images = []) => {
   );
 };
 
-const buildImagePayload = (uploadedImages = [], uploadedMainImage, uploadedGalleryImages = []) => {
-  const mainImage = uploadedMainImage || uploadedImages[0];
-  const galleryImages = uploadedGalleryImages.length ? uploadedGalleryImages : uploadedImages.slice(mainImage ? 1 : 0);
+const buildImagePayload = (body, uploadedImages = [], uploadedMainImage, uploadedGalleryImages = []) => {
+  const bodyMainImage = normalizeImage(body.mainImage);
+  const bodyGalleryImages = normalizeImages(body.galleryImages);
+  const bodyImages = normalizeImages(body.images);
+  const mainImage = uploadedMainImage || bodyMainImage || uploadedImages[0] || bodyImages[0];
+  const galleryImages = uploadedGalleryImages.length
+    ? uploadedGalleryImages
+    : bodyGalleryImages.length
+      ? bodyGalleryImages
+      : uploadedImages.slice(mainImage ? 1 : 0).length
+        ? uploadedImages.slice(mainImage ? 1 : 0)
+        : bodyImages.slice(mainImage ? 1 : 0);
 
   return {
     mainImage,
@@ -80,7 +112,7 @@ const buildPropertyPayload = (body, uploadedImages = [], userId, uploadedMainIma
   status: body.status || 'Available',
   amenities: normalizeArray(body.amenities),
   googleMapLink: body.googleMapLink,
-  ...buildImagePayload(uploadedImages, uploadedMainImage, uploadedGalleryImages),
+  ...buildImagePayload(body, uploadedImages, uploadedMainImage, uploadedGalleryImages),
   createdBy: userId,
 });
 
@@ -94,6 +126,8 @@ export const createProperty = asyncHandler(async (req, res) => {
       req.uploadedGalleryImages || [],
     ),
   );
+
+  notifyMatchingPropertyAlerts(property).catch(() => null);
 
   res.status(201).json({ success: true, data: property });
 });
@@ -206,6 +240,14 @@ export const updateProperty = asyncHandler(async (req, res) => {
     updates.images = property.images.filter((image) => !publicIdsToRemove.includes(image.publicId));
   }
 
+  if (req.body.mainImage) updates.mainImage = normalizeImage(req.body.mainImage);
+  if (req.body.galleryImages) updates.galleryImages = normalizeImages(req.body.galleryImages);
+  if (req.body.images && !req.body.mainImage && !req.body.galleryImages) {
+    const images = normalizeImages(req.body.images);
+    updates.mainImage = images[0];
+    updates.galleryImages = images.slice(1);
+  }
+
   if (req.uploadedMainImage) {
     if (property.mainImage?.publicId) await deleteCloudinaryImages([property.mainImage]);
     updates.mainImage = req.uploadedMainImage;
@@ -238,6 +280,8 @@ export const updateProperty = asyncHandler(async (req, res) => {
     returnDocument: 'after',
     runValidators: true,
   });
+
+  notifyMatchingPropertyAlerts(updated).catch(() => null);
 
   res.status(200).json({ success: true, data: updated });
 });

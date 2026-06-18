@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { FaEnvelope, FaPhoneAlt, FaUserTie, FaWhatsapp } from 'react-icons/fa';
+import { trackEvent } from '../utils/tracking';
 
 export default function StickyAgentCard({ propertyTitle }) {
   return (
@@ -26,21 +27,22 @@ export default function StickyAgentCard({ propertyTitle }) {
         </p>
         <p className="flex items-center gap-3">
           <FaEnvelope className="text-gold" aria-hidden="true" />
-          info@p4properties.com
+          p4propertiesindea@gmail.com
         </p>
       </div>
       <div className="grid gap-3">
-        <a href="#site-visit" className="bg-gold px-5 py-3 text-center text-sm font-extrabold uppercase tracking-[0.12em] text-night transition-colors hover:bg-night hover:text-white">
+        <a href="/site-visit" className="rounded-xl bg-gold px-5 py-3 text-center text-sm font-extrabold uppercase tracking-[0.12em] text-night transition-colors hover:bg-night hover:text-white">
           Schedule Site Visit
         </a>
         <a
           href={`https://wa.me/918195002006?text=I%20am%20interested%20in%20${encodeURIComponent(propertyTitle)}`}
-          className="inline-flex items-center justify-center gap-2 border border-ink/15 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-ink transition-colors hover:border-gold hover:text-gold"
+          onClick={() => trackEvent('whatsapp_click', { source: 'sticky_agent_card', property_title: propertyTitle })}
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-ink/15 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-ink transition-colors hover:border-gold hover:text-gold"
         >
           <FaWhatsapp aria-hidden="true" />
           WhatsApp Inquiry
         </a>
-        <a href="tel:+918195002006" className="border border-ink/15 px-5 py-3 text-center text-sm font-extrabold uppercase tracking-[0.12em] text-ink transition-colors hover:border-gold hover:text-gold">
+        <a href="tel:+918195002006" onClick={() => trackEvent('phone_click', { source: 'sticky_agent_card', property_title: propertyTitle })} className="rounded-xl border border-ink/15 px-5 py-3 text-center text-sm font-extrabold uppercase tracking-[0.12em] text-ink transition-colors hover:border-gold hover:text-gold">
           Call Now
         </a>
       </div>

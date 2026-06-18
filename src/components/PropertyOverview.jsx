@@ -14,27 +14,27 @@ export default function PropertyOverview({ property }) {
   const [expanded, setExpanded] = useState(false);
   const shouldClamp = property.description?.length > 280;
   const description = !shouldClamp || expanded ? property.description : `${property.description.slice(0, 280)}...`;
-  const location = [property.locality, property.city].filter(Boolean).join(', ');
+  const location = [property.location || property.locality, property.city].filter(Boolean).join(', ');
 
   return (
     <div className="grid gap-8">
       <motion.header
-        className="rounded-2xl border border-ink/10 bg-white/85 p-7 shadow-soft backdrop-blur-xl"
+        className="rounded-2xl border border-ink/10 bg-white/85 p-5 shadow-soft backdrop-blur-xl sm:p-7"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.6 }}
       >
-        <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-gold">
+        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-gold sm:text-sm sm:tracking-[0.18em]">
           <FaMapMarkerAlt aria-hidden="true" />
           {location || property.address}
         </p>
         <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 className="font-display text-4xl font-bold leading-tight text-ink md:text-5xl">{property.title}</h2>
+            <h2 className="font-display text-3xl font-bold leading-tight text-ink sm:text-4xl md:text-5xl">{property.title}</h2>
             <p className="mt-3 text-muted">{property.address}</p>
           </div>
-          <p className="text-3xl font-extrabold text-gold">{formatPrice(property.price)}</p>
+          <p className="text-2xl font-extrabold text-gold sm:text-3xl">{formatPrice(property.price)}</p>
         </div>
       </motion.header>
 
@@ -47,19 +47,19 @@ export default function PropertyOverview({ property }) {
       >
         <Fact icon={FaBed} label="Bedrooms" value={property.bedrooms || '-'} />
         <Fact icon={FaBath} label="Bathrooms" value={property.bathrooms || '-'} />
-        <Fact icon={FaRulerCombined} label="Area" value={`${Number(property.landArea || 0).toLocaleString('en-IN')} ${property.areaUnit || 'Sq.ft.'}`} />
+        <Fact icon={FaRulerCombined} label="Area" value={`${Number(property.area || property.landArea || 0).toLocaleString('en-IN')} ${property.areaUnit || 'Sq.ft.'}`} />
         <Fact icon={FaCar} label="Parking" value={property.parking || '-'} />
         <Fact icon={FaHome} label="Property Type" value={property.propertyType} />
       </motion.div>
 
       <motion.section
-        className="rounded-2xl border border-ink/10 bg-white/85 p-7 shadow-soft backdrop-blur-xl"
+        className="rounded-2xl border border-ink/10 bg-white/85 p-5 shadow-soft backdrop-blur-xl sm:p-7"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="font-display text-3xl font-bold text-ink">Property Overview</h2>
+        <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">Property Overview</h2>
         <p className="mt-4 leading-8 text-muted">{description}</p>
         {shouldClamp && (
           <button

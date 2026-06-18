@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { FaBlog, FaCalendarCheck, FaComments, FaHome, FaQuoteRight, FaStar } from 'react-icons/fa';
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import adminApi from '../../api/adminApi';
+import dashboardService from '../../services/dashboardService';
 import AdminCard from '../components/AdminCard';
 import PageHeader from '../components/PageHeader';
 import StatusBadge from '../components/StatusBadge';
@@ -15,9 +15,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    adminApi
-      .get('/dashboard/analytics')
-      .then(({ data }) => setAnalytics(data.data || {}))
+    dashboardService
+      .getDashboardAnalytics()
+      .then((data) => setAnalytics(data || {}))
       .catch(() => setAnalytics({}))
       .finally(() => setLoading(false));
   }, []);
@@ -34,6 +34,7 @@ export default function AdminDashboard() {
         <AdminCard title="Total Properties" value={analytics?.totalProperties || 0} icon={FaHome} />
         <AdminCard title="Featured Properties" value={analytics?.featuredProperties || 0} icon={FaStar} tone="gold" />
         <AdminCard title="Total Inquiries" value={analytics?.totalInquiries || 0} icon={FaComments} />
+        <AdminCard title="Lead To Visit Rate" value={`${analytics?.leadToVisitConversionRate || 0}%`} icon={FaComments} tone="gold" />
         <AdminCard title="New Inquiries" value={analytics?.recentInquiries?.length || 0} icon={FaComments} tone="gold" />
         <AdminCard title="Total Site Visits" value={analytics?.totalSiteVisits || 0} icon={FaCalendarCheck} />
         <AdminCard title="Pending Site Visits" value={analytics?.pendingSiteVisits || 0} icon={FaCalendarCheck} tone="gold" />
@@ -69,11 +70,34 @@ export default function AdminDashboard() {
         </Panel>
       </div>
 
+      <div className="mt-7 grid gap-7 xl:grid-cols-3">
+        <MiniDistribution title="Leads by Source" rows={analytics?.inquiriesBySource || []} />
+        <MiniDistribution title="Leads by Stage" rows={analytics?.inquiriesByStatus || []} />
+        <MiniDistribution title="Visits by Source" rows={analytics?.siteVisitsBySource || []} />
+      </div>
+
       <div className="mt-7 grid gap-7 xl:grid-cols-2">
         <RecentTable title="Recent Inquiries" rows={analytics?.recentInquiries || []} />
         <RecentTable title="Recent Site Visits" rows={analytics?.recentSiteVisits || []} />
       </div>
     </motion.div>
+  );
+}
+
+function MiniDistribution({ title, rows }) {
+  return (
+    <section className="rounded-2xl border border-white/10 bg-[#1A1A1A] p-6 shadow-[0_20px_60px_rgba(0,0,0,.25)]">
+      <h3 className="font-display text-2xl font-bold text-white">{title}</h3>
+      <div className="mt-5 grid gap-3">
+        {rows.map((row) => (
+          <div key={row.label} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+            <span className="text-sm font-bold capitalize text-white/75">{String(row.label).replace(/_/g, ' ')}</span>
+            <span className="font-display text-2xl font-bold text-gold">{row.count}</span>
+          </div>
+        ))}
+        {!rows.length && <p className="text-sm font-semibold text-white/45">No data yet.</p>}
+      </div>
+    </section>
   );
 }
 

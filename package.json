@@ -8,6 +8,8 @@
     "server": "node server/server.js",
     "server:dev": "nodemon server/server.js",
     "cloudinary:test": "node server/scripts/testCloudinary.js",
+    "seed:launch": "node server/scripts/seedLaunchContent.js",
+    "sitemap:generate": "node scripts/generateSitemap.js",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0"
   },

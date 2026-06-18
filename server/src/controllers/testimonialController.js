@@ -6,6 +6,23 @@ import asyncHandler from '../utils/asyncHandler.js';
 
 const toBoolean = (value) => value === true || value === 'true';
 
+const normalizeImage = (value) => {
+  if (!value) return undefined;
+  let image = value;
+  if (typeof value === 'string') {
+    try {
+      image = JSON.parse(value);
+    } catch {
+      image = { url: value };
+    }
+  }
+  if (!image?.url) return undefined;
+  return {
+    url: image.url,
+    publicId: image.publicId || `external/${image.url.replace(/[^a-z0-9]/gi, '-').toLowerCase().slice(0, 80)}`,
+  };
+};
+
 const getPagination = (query) => {
   const page = Math.max(Number(query.page) || 1, 1);
   const limit = Math.min(Math.max(Number(query.limit) || 12, 1), 100);
@@ -18,7 +35,7 @@ export const createTestimonial = asyncHandler(async (req, res) => {
     ...req.body,
     featured: toBoolean(req.body.featured),
     approved: toBoolean(req.body.approved),
-    image: req.uploadedImages?.[0],
+    image: req.uploadedImages?.[0] || normalizeImage(req.body.image),
   });
 
   sendCreated(res, testimonial, 'Testimonial created successfully');
@@ -65,6 +82,7 @@ export const updateTestimonial = asyncHandler(async (req, res) => {
   const updates = { ...req.body };
   if (updates.featured !== undefined) updates.featured = toBoolean(updates.featured);
   if (updates.approved !== undefined) updates.approved = toBoolean(updates.approved);
+  if (updates.image !== undefined) updates.image = normalizeImage(updates.image);
 
   if (req.uploadedImages?.[0]) {
     if (testimonial.image?.publicId) await cloudinary.uploader.destroy(testimonial.image.publicId);

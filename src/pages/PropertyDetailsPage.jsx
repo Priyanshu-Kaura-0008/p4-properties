@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { FaCalendarCheck, FaPhoneAlt, FaWhatsapp } from 'react-icons/fa';
 import { Link, useParams } from 'react-router-dom';
-import adminApi from '../api/adminApi';
 import FloatingActions from '../components/FloatingActions';
 import Footer from '../components/Footer';
 import InquiryForm from '../components/InquiryForm';
@@ -15,7 +15,9 @@ import PropertySidebar from '../components/PropertySidebar';
 import RelatedProperties from '../components/RelatedProperties';
 import ScheduleVisit from '../components/ScheduleVisit';
 import SEO from '../components/SEO';
+import propertyService from '../services/propertyService';
 import { breadcrumbSchema, propertySchema } from '../utils/seo';
+import { trackPropertyView } from '../utils/tracking';
 
 export default function PropertyDetailsPage() {
   const { slug } = useParams();
@@ -30,19 +32,19 @@ export default function PropertyDetailsPage() {
     setLoading(true);
     setError('');
 
-    adminApi
-      .get(`/properties/${slug}`, { signal: controller.signal })
-      .then(({ data }) => {
-        const propertyData = data.data;
+    propertyService
+      .getProperty(slug, { signal: controller.signal })
+      .then((propertyData) => {
         setProperty(propertyData);
+        trackPropertyView(propertyData);
 
-        return adminApi.get('/properties', {
-          params: { city: propertyData.city, propertyType: propertyData.propertyType, limit: 6 },
-          signal: controller.signal,
-        });
+        return propertyService.getProperties(
+          { city: propertyData.city, propertyType: propertyData.propertyType, limit: 5 },
+          { signal: controller.signal },
+        );
       })
-      .then(({ data }) => {
-        setRelated((data.data || []).filter((item) => item.slug !== slug));
+      .then((data) => {
+        setRelated((data.data || []).filter((item) => item.slug !== slug).slice(0, 4));
       })
       .catch((requestError) => {
         if (requestError.name === 'CanceledError') return;
@@ -62,11 +64,11 @@ export default function PropertyDetailsPage() {
   const propertyDescription =
     property.description?.slice(0, 155) ||
     `${property.title} in ${property.city} by P4 Properties. Explore price, amenities, location, images, and schedule a private site visit.`;
-  const propertyImage = property.images?.[0]?.url;
+  const propertyImage = property.mainImage?.url || property.images?.[0]?.url;
 
   return (
     <motion.main
-      className="bg-white text-ink"
+      className="bg-white pb-24 text-ink xl:pb-0"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35 }}
@@ -89,7 +91,7 @@ export default function PropertyDetailsPage() {
       <Navbar />
       <PropertyGallery property={property} />
 
-      <section className="bg-ivory py-16">
+      <section className="bg-ivory py-12 md:py-16">
         <div className="container-p4 grid gap-8 xl:grid-cols-[1fr_360px]">
           <div className="grid gap-8">
             <PropertyOverview property={property} />
@@ -109,7 +111,7 @@ export default function PropertyDetailsPage() {
 
       <RelatedProperties properties={related} />
 
-      <section className="bg-night py-24">
+      <section className="bg-night py-16 md:py-24">
         <motion.div
           className="container-p4 text-center"
           initial={{ opacity: 0, y: 24 }}
@@ -118,22 +120,22 @@ export default function PropertyDetailsPage() {
           transition={{ duration: 0.65 }}
         >
           <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-gold">Private Advisory</p>
-          <h2 className="font-display text-4xl font-bold leading-tight text-white md:text-6xl">
+          <h2 className="font-display text-3xl font-bold leading-tight text-white md:text-6xl">
             Ready to Make This Property Yours?
           </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/72">
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-white/72 md:text-lg">
             Our experts are here to guide you through every step of the buying journey.
           </p>
           <div className="mt-9 flex flex-col justify-center gap-4 sm:flex-row">
             <a
-              href="#site-visit"
-              className="rounded-xl bg-gold px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-night transition-colors hover:bg-white"
+              href="/site-visit"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-gold px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-night transition-colors hover:bg-white"
             >
               Schedule Site Visit
             </a>
             <a
               href="#inquiry"
-              className="rounded-xl border border-white/40 px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-white transition-colors hover:border-gold hover:text-gold"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/40 px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-white transition-colors hover:border-gold hover:text-gold"
             >
               Send Inquiry
             </a>
@@ -142,8 +144,44 @@ export default function PropertyDetailsPage() {
       </section>
 
       <Footer />
+      <MobilePropertyCta property={property} />
       <FloatingActions />
     </motion.main>
+  );
+}
+
+function MobilePropertyCta({ property }) {
+  const phone = '919888010321';
+  const message = encodeURIComponent(`I am interested in ${property.title}. Please share details.`);
+
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-[95] border-t border-ink/10 bg-white/95 px-3 py-3 shadow-[0_-18px_45px_rgba(17,17,17,0.16)] backdrop-blur-xl xl:hidden">
+      <div className="mx-auto grid max-w-md grid-cols-3 gap-2">
+        <a
+          href={`tel:+${phone}`}
+          className="inline-flex min-h-12 flex-col items-center justify-center rounded-xl bg-night px-2 py-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-white"
+        >
+          <FaPhoneAlt className="mb-1" aria-hidden="true" />
+          Call
+        </a>
+        <a
+          href={`https://wa.me/${phone}?text=${message}`}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-h-12 flex-col items-center justify-center rounded-xl border border-ink/15 bg-white px-2 py-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-ink"
+        >
+          <FaWhatsapp className="mb-1 text-gold" aria-hidden="true" />
+          WhatsApp
+        </a>
+        <Link
+          to="/site-visit"
+          className="inline-flex min-h-12 flex-col items-center justify-center rounded-xl bg-gold px-2 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-night"
+        >
+          <FaCalendarCheck className="mb-1" aria-hidden="true" />
+          Site Visit
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -181,7 +219,7 @@ function PropertyNotFound({ message }) {
         />
         <div className="container-p4 relative z-10">
           <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-gold">Property Unavailable</p>
-          <h1 className="font-display text-5xl font-bold text-white md:text-7xl">This Listing Could Not Be Found</h1>
+          <h1 className="font-display text-4xl font-bold text-white sm:text-5xl md:text-7xl">This Listing Could Not Be Found</h1>
           <p className="mx-auto mt-5 max-w-2xl leading-8 text-white/72">
             {message || 'The property may have been reserved, updated, or removed from the public portfolio.'}
           </p>

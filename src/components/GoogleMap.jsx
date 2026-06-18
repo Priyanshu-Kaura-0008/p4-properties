@@ -20,7 +20,7 @@ export default function GoogleMap({ latitude, longitude, location }) {
         href={directionsUrl}
         target="_blank"
         rel="noreferrer"
-        className="mt-5 inline-flex items-center gap-3 bg-night px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white transition-colors hover:bg-gold hover:text-night"
+        className="mt-5 inline-flex items-center gap-3 rounded-xl bg-night px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white transition-colors hover:bg-gold hover:text-night"
       >
         <FaDirections aria-hidden="true" />
         Get Directions

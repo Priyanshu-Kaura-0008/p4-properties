@@ -23,6 +23,23 @@ const normalizeArray = (value) => {
   return [];
 };
 
+const normalizeImage = (value) => {
+  if (!value) return undefined;
+  let image = value;
+  if (typeof value === 'string') {
+    try {
+      image = JSON.parse(value);
+    } catch {
+      image = { url: value };
+    }
+  }
+  if (!image?.url) return undefined;
+  return {
+    url: image.url,
+    publicId: image.publicId || `external/${slugify(image.url, { lower: true, strict: true }).slice(0, 80)}`,
+  };
+};
+
 const toBoolean = (value) => value === true || value === 'true';
 
 const buildBlogFilter = (query, admin = false) => {
@@ -49,7 +66,7 @@ export const createBlog = asyncHandler(async (req, res) => {
     category: req.body.category,
     tags: normalizeArray(req.body.tags),
     published: toBoolean(req.body.published),
-    coverImage: req.uploadedImages?.[0],
+    coverImage: req.uploadedImages?.[0] || normalizeImage(req.body.coverImage),
     author: req.user._id,
   });
 
@@ -89,6 +106,7 @@ export const updateBlog = asyncHandler(async (req, res) => {
   if (updates.title) updates.slug = `${slugify(updates.title, { lower: true, strict: true })}-${blog._id.toString().slice(-6)}`;
   if (req.body.tags !== undefined) updates.tags = normalizeArray(req.body.tags);
   if (req.body.published !== undefined) updates.published = toBoolean(req.body.published);
+  if (req.body.coverImage !== undefined) updates.coverImage = normalizeImage(req.body.coverImage);
 
   if (req.uploadedImages?.[0]) {
     if (blog.coverImage?.publicId) await cloudinary.uploader.destroy(blog.coverImage.publicId);

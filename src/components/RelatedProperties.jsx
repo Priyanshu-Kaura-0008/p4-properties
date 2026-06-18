@@ -9,18 +9,19 @@ const fallbackImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56
 
 const mapProperty = (property) => ({
   id: property.slug || property._id,
+  slug: property.slug,
   title: property.title,
   price: Number(property.price).toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }),
-  location: [property.locality, property.city].filter(Boolean).join(', '),
+  location: [property.location || property.locality, property.city].filter(Boolean).join(', '),
   category: property.category || 'Residential',
   bedrooms: property.bedrooms,
   bathrooms: property.bathrooms,
   parking: property.parking,
-  area: property.landArea,
+  area: property.area || property.landArea,
   featured: property.featured,
   description: property.description,
   amenities: property.amenities || [],
-  image: property.images?.[0]?.url || fallbackImage,
+  image: property.mainImage?.url || property.images?.[0]?.url || fallbackImage,
 });
 
 export default function RelatedProperties({ properties = [] }) {
@@ -30,7 +31,7 @@ export default function RelatedProperties({ properties = [] }) {
     <section className="bg-ivory py-24">
       <div className="container-p4">
         <SectionHeading eyebrow="Related Listings" title="Similar Properties" />
-        <Swiper modules={[Navigation]} navigation spaceBetween={24} slidesPerView={1} breakpoints={{ 768: { slidesPerView: 2 }, 1180: { slidesPerView: 3 } }}>
+        <Swiper modules={[Navigation]} navigation spaceBetween={24} slidesPerView={1} breakpoints={{ 768: { slidesPerView: 2 }, 1180: { slidesPerView: 4 } }}>
           {properties.map((property) => (
             <SwiperSlide key={property._id}>
               <PropertyCard property={mapProperty(property)} />

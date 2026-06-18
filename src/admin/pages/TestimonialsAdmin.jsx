@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa';
 import toast from 'react-hot-toast';
-import adminApi from '../../api/adminApi';
+import testimonialService from '../../services/testimonialService';
 import ConfirmModal from '../components/ConfirmModal';
 import PageHeader from '../components/PageHeader';
 import StatusBadge from '../components/StatusBadge';
@@ -15,7 +15,7 @@ export default function TestimonialsAdmin() {
   const [deleteId, setDeleteId] = useState(null);
   const { register, handleSubmit, reset } = useForm({ defaultValues: { rating: 5 } });
 
-  const load = () => adminApi.get('/testimonials/admin').then(({ data }) => setItems(data.data || []));
+  const load = () => testimonialService.getAdminTestimonials().then((data) => setItems(data.data || []));
   useEffect(() => { load(); }, []);
 
   const submit = async (values) => {
@@ -26,17 +26,17 @@ export default function TestimonialsAdmin() {
       if (key !== 'image' && key !== 'featured' && key !== 'approved') formData.append(key, value);
     });
     if (values.image?.[0]) formData.append('image', values.image[0]);
-    if (editing) await adminApi.put(`/testimonials/${editing._id}`, formData);
-    else await adminApi.post('/testimonials', formData);
+    if (editing) await testimonialService.updateTestimonial(editing._id, formData);
+    else await testimonialService.createTestimonial(formData);
     toast.success(editing ? 'Testimonial updated' : 'Testimonial created');
     setEditing(null);
     reset({ rating: 5 });
     load();
   };
 
-  const approve = async (id) => { await adminApi.patch(`/testimonials/${id}/approve`); toast.success('Testimonial approved'); load(); };
-  const reject = async (item) => { await adminApi.put(`/testimonials/${item._id}`, { ...item, approved: false }); toast.success('Testimonial rejected'); load(); };
-  const remove = async () => { await adminApi.delete(`/testimonials/${deleteId}`); toast.success('Testimonial deleted'); setDeleteId(null); load(); };
+  const approve = async (id) => { await testimonialService.approveTestimonial(id); toast.success('Testimonial approved'); load(); };
+  const reject = async (item) => { await testimonialService.updateTestimonial(item._id, { approved: false }); toast.success('Testimonial rejected'); load(); };
+  const remove = async () => { await testimonialService.deleteTestimonial(deleteId); toast.success('Testimonial deleted'); setDeleteId(null); load(); };
 
   const edit = (item) => {
     setEditing(item);
