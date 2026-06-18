@@ -96,16 +96,25 @@ export default function LocationsSection() {
           </p>
         </motion.div>
 
-        <motion.div className="w-full max-w-full overflow-hidden lg:hidden" variants={sectionVariants}>
+        <motion.div className="w-full max-w-full overflow-hidden px-1 pb-2 sm:px-2 lg:hidden" variants={sectionVariants}>
           <Swiper
             modules={[Autoplay]}
-            slidesPerView={1.05}
-            spaceBetween={14}
+            slidesPerView={1.2}
+            spaceBetween={16}
+            centeredSlides
             loop
-            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            speed={900}
+            autoplay={{ delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            breakpoints={{
+              768: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+                centeredSlides: false,
+              },
+            }}
           >
             {locationCards.map((location) => (
-              <SwiperSlide key={location.city} className="h-auto">
+              <SwiperSlide key={location.city} className="flex h-auto">
                 <LocationCard location={location} compact />
               </SwiperSlide>
             ))}
@@ -127,8 +136,8 @@ function LocationCard({ location, compact = false }) {
     <motion.article
       variants={cardVariants}
       whileHover={{ y: -10 }}
-      className={`group relative overflow-hidden rounded-2xl border border-white/25 bg-night shadow-soft transition-shadow hover:shadow-premium ${
-        compact ? 'min-h-[280px] w-full' : 'min-h-[390px]'
+      className={`group relative h-full w-full overflow-hidden rounded-2xl border border-white/25 bg-night shadow-soft transition-shadow hover:shadow-premium ${
+        compact ? 'min-h-[340px]' : 'min-h-[390px]'
       }`}
     >
       <img
@@ -139,13 +148,13 @@ function LocationCard({ location, compact = false }) {
         className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-night via-night/60 to-night/12" />
-      <div className={`relative z-10 flex h-full flex-col justify-end text-white ${compact ? 'min-h-[280px] p-5' : 'min-h-[390px] p-6'}`}>
+      <div className={`relative z-10 flex h-full flex-col justify-end text-white ${compact ? 'min-h-[340px] p-5' : 'min-h-[390px] p-6'}`}>
         <p className="mb-3 flex items-center gap-2 text-sm font-bold text-gold">
           <FaMapMarkerAlt aria-hidden="true" />
           {COMPANY_INFO.companyName}
         </p>
         <h3 className="font-display text-2xl font-bold leading-tight md:text-3xl">{location.city}</h3>
-        <p className={`${compact ? 'mt-2 text-sm leading-6' : 'mt-3 min-h-[84px] leading-7'} text-white/78`}>{location.description}</p>
+        <p className={`${compact ? 'mt-2 min-h-[72px] text-sm leading-6' : 'mt-3 min-h-[84px] leading-7'} text-white/78`}>{location.description}</p>
         <Link
           to={propertyLink(location.city)}
           className="mt-6 inline-flex w-fit rounded-xl border border-white/25 bg-white/10 px-5 py-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white backdrop-blur-xl transition-all hover:border-gold hover:bg-gold hover:text-night hover:shadow-[0_0_30px_rgba(212,175,55,0.42)]"

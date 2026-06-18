@@ -25,7 +25,7 @@ export default function PropertySidebar({ property }) {
           <FaPhoneAlt aria-hidden="true" />
           Call Advisor
         </a>
-        <a href={`https://wa.me/${COMPANY_INFO.whatsapp}?text=${encodeURIComponent(`I am interested in ${property.title}`)}`} onClick={() => trackEvent('whatsapp_click', { source: 'property_sidebar', property_title: property.title })} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-ink/15 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-ink transition-colors hover:border-gold hover:text-gold">
+        <a href={`https://wa.me/${COMPANY_INFO.whatsapp}?text=${encodeURIComponent(`I am interested in ${property.title}`)}`} onClick={() => trackEvent('whatsapp_click', { source: 'property_sidebar', property_title: property.title })} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-ink/15 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-ink transition-colors hover:border-gold hover:text-gold">
           <FaWhatsapp aria-hidden="true" />
           WhatsApp
         </a>

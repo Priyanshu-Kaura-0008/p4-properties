@@ -255,7 +255,7 @@ function SocialLinks() {
             key={social.label}
             href={social.href}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             aria-label={`Visit ${COMPANY_INFO.companyName} on ${social.label}`}
             className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-sm text-white transition-all hover:-translate-y-1 hover:border-gold hover:bg-gold hover:text-night hover:shadow-[0_0_28px_rgba(212,175,55,0.35)] md:h-11 md:w-11 md:text-base"
           >

@@ -52,7 +52,7 @@ export default function ContactPage() {
                     <p className="mt-1 text-sm font-bold text-muted">{phone}</p>
                     <div className="mt-3 grid gap-2">
                       <a href={`tel:${phone.replace(/\s/g, '')}`} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-night px-3 text-xs font-extrabold uppercase tracking-[0.12em] text-white">Call</a>
-                      <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-ink/15 px-3 text-xs font-extrabold uppercase tracking-[0.12em] text-ink">WhatsApp</a>
+                      <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-ink/15 px-3 text-xs font-extrabold uppercase tracking-[0.12em] text-ink">WhatsApp</a>
                     </div>
                   </div>
                 ))}
@@ -113,7 +113,7 @@ export default function ContactPage() {
                   <a href={`tel:${phone.replace(/\s/g, '')}`} className="inline-flex min-h-12 items-center justify-center rounded-xl bg-night px-4 py-3 text-center text-xs font-extrabold uppercase tracking-[0.14em] text-white transition-colors hover:bg-gold hover:text-night">
                     Call
                   </a>
-                  <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-ink/15 px-4 py-3 text-center text-xs font-extrabold uppercase tracking-[0.14em] text-ink transition-colors hover:border-gold hover:text-gold">
+                  <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-ink/15 px-4 py-3 text-center text-xs font-extrabold uppercase tracking-[0.14em] text-ink transition-colors hover:border-gold hover:text-gold">
                     WhatsApp
                   </a>
                 </div>
