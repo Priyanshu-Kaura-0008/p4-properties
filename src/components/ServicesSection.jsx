@@ -89,7 +89,7 @@ export default function ServicesSection() {
           </Swiper>
         </motion.div>
 
-        <motion.div className="hidden gap-6 lg:grid lg:grid-cols-2 xl:grid-cols-3" variants={sectionVariants}>
+        <motion.div className="hidden items-stretch gap-6 lg:grid lg:grid-cols-2 xl:grid-cols-3" variants={sectionVariants}>
           {services.map((service) => (
             <ServiceCard key={service.title} service={service} />
           ))}
@@ -108,7 +108,7 @@ function ServiceCard({ service, compact = false }) {
       whileHover={{ y: -10 }}
       className={`group relative flex h-full w-full flex-col overflow-hidden rounded-2xl shadow-soft backdrop-blur-xl transition-shadow hover:shadow-premium ${
         compact
-          ? 'min-h-[340px] border border-white/25 bg-night p-5 text-white'
+          ? 'h-[460px] border border-white/25 bg-night p-5 text-white sm:h-[430px] md:h-[420px]'
           : 'min-h-[430px] border border-ink/10 bg-white/85 p-7'
       }`}
     >

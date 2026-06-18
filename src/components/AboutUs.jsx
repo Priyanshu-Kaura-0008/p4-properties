@@ -1,10 +1,7 @@
 import { motion } from 'framer-motion';
-import { FaHandshake, FaRegCheckCircle, FaShieldAlt, FaUserTie } from 'react-icons/fa';
+import { FaBriefcase, FaEye, FaHandshake, FaShieldAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { Autoplay } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import { COMPANY_INFO } from '../constants/companyInfo';
-import 'swiper/css';
 
 const locations = COMPANY_INFO.serviceAreas.filter((location) => location !== 'Rajpura');
 
@@ -17,12 +14,12 @@ const pillars = [
   {
     title: 'Transparency',
     description: 'Providing complete clarity at every stage of the property journey.',
-    icon: FaRegCheckCircle,
+    icon: FaEye,
   },
   {
     title: 'Professionalism',
     description: 'Delivering expert guidance backed by market knowledge and experience.',
-    icon: FaUserTie,
+    icon: FaBriefcase,
   },
   {
     title: 'Partnership',
@@ -100,50 +97,30 @@ export default function AboutUs() {
           </div>
         </motion.div>
 
-        <motion.div variants={sectionVariants} className="w-full max-w-full overflow-hidden md:hidden">
-          <Swiper
-            modules={[Autoplay]}
-            slidesPerView={1.1}
-            spaceBetween={12}
-            loop
-            autoplay={{ delay: 3000, pauseOnMouseEnter: true, disableOnInteraction: false }}
-          >
-            {pillars.map((pillar) => (
-              <SwiperSlide key={pillar.title} className="h-auto">
-                <PillarCard pillar={pillar} compact />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </motion.div>
-
-        <motion.div variants={sectionVariants} className="hidden gap-5 lg:grid lg:grid-cols-2">
-          {pillars.map((pillar, index) => {
-            return (
-              <PillarCard key={pillar.title} pillar={pillar} className={index % 2 === 1 ? 'lg:translate-y-8' : ''} />
-            );
-          })}
+        <motion.div variants={sectionVariants} className="grid w-full max-w-full grid-cols-2 items-stretch gap-3 md:gap-4 lg:gap-5">
+          {pillars.map((pillar) => (
+            <PillarCard key={pillar.title} pillar={pillar} />
+          ))}
         </motion.div>
       </div>
     </motion.section>
   );
 }
 
-function PillarCard({ pillar, compact = false, className = '' }) {
+function PillarCard({ pillar, className = '' }) {
   const Icon = pillar.icon;
 
   return (
     <motion.article
       variants={itemVariants}
       whileHover={{ y: -8 }}
-      className={`group h-full rounded-2xl border border-white/70 bg-white/65 shadow-soft backdrop-blur-xl transition-shadow hover:shadow-premium ${
-        compact ? 'min-h-[190px] w-full p-5' : 'p-7'
-      } ${className}`}
+      className={`group relative flex h-full min-h-[160px] max-h-[190px] w-full flex-col overflow-hidden rounded-[20px] border border-black/10 bg-white p-4 shadow-soft transition-shadow hover:shadow-premium md:p-5 lg:min-h-[260px] lg:max-h-none lg:border-white/70 lg:bg-white/65 lg:p-7 ${className}`}
     >
-      <div className={`${compact ? 'mb-4 h-11 w-11 text-base' : 'mb-6 h-14 w-14 text-xl'} flex items-center justify-center rounded-xl bg-night text-gold shadow-soft transition-all group-hover:bg-gold group-hover:text-night`}>
+      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-gold/12 text-lg text-gold shadow-soft transition-all md:h-11 md:w-11 lg:mb-6 lg:h-16 lg:w-16 lg:bg-night lg:text-2xl">
         <Icon aria-hidden="true" />
       </div>
-      <h3 className="font-display text-xl font-bold text-ink md:text-2xl">{pillar.title}</h3>
-      <p className={`${compact ? 'mt-2 text-sm leading-6' : 'mt-3 leading-7'} text-muted`}>{pillar.description}</p>
+      <h3 className="font-display text-lg font-bold leading-tight text-ink md:text-xl lg:text-2xl">{pillar.title}</h3>
+      <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600 md:text-[15px] lg:mt-4 lg:min-h-[84px] lg:leading-8 lg:text-muted">{pillar.description}</p>
     </motion.article>
   );
 }
