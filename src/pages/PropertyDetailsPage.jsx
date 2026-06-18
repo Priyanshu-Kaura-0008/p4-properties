@@ -15,6 +15,7 @@ import PropertySidebar from '../components/PropertySidebar';
 import RelatedProperties from '../components/RelatedProperties';
 import ScheduleVisit from '../components/ScheduleVisit';
 import SEO from '../components/SEO';
+import { COMPANY_INFO, CONTACT_LINKS } from '../constants/companyInfo';
 import propertyService from '../services/propertyService';
 import { breadcrumbSchema, propertySchema } from '../utils/seo';
 import { trackPropertyView } from '../utils/tracking';
@@ -63,7 +64,7 @@ export default function PropertyDetailsPage() {
 
   const propertyDescription =
     property.description?.slice(0, 155) ||
-    `${property.title} in ${property.city} by P4 Properties. Explore price, amenities, location, images, and schedule a private site visit.`;
+    `${property.title} in ${property.city} by ${COMPANY_INFO.companyName}. Explore price, amenities, location, images, and schedule a private site visit.`;
   const propertyImage = property.mainImage?.url || property.images?.[0]?.url;
 
   return (
@@ -74,7 +75,7 @@ export default function PropertyDetailsPage() {
       transition={{ duration: 0.35 }}
     >
       <SEO
-        title={`${property.title} in ${property.city} | P4 Properties`}
+        title={`${property.title} in ${property.city} | ${COMPANY_INFO.companyName}`}
         description={propertyDescription}
         image={propertyImage}
         canonical={`/properties/${property.slug}`}
@@ -151,21 +152,20 @@ export default function PropertyDetailsPage() {
 }
 
 function MobilePropertyCta({ property }) {
-  const phone = '919888010321';
   const message = encodeURIComponent(`I am interested in ${property.title}. Please share details.`);
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-[95] border-t border-ink/10 bg-white/95 px-3 py-3 shadow-[0_-18px_45px_rgba(17,17,17,0.16)] backdrop-blur-xl xl:hidden">
       <div className="mx-auto grid max-w-md grid-cols-3 gap-2">
         <a
-          href={`tel:+${phone}`}
+          href={CONTACT_LINKS.phone}
           className="inline-flex min-h-12 flex-col items-center justify-center rounded-xl bg-night px-2 py-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-white"
         >
           <FaPhoneAlt className="mb-1" aria-hidden="true" />
           Call
         </a>
         <a
-          href={`https://wa.me/${phone}?text=${message}`}
+          href={`https://wa.me/${COMPANY_INFO.whatsapp}?text=${message}`}
           target="_blank"
           rel="noreferrer"
           className="inline-flex min-h-12 flex-col items-center justify-center rounded-xl border border-ink/15 bg-white px-2 py-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-ink"

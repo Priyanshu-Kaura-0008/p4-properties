@@ -4,6 +4,7 @@ import FloatingActions from '../components/FloatingActions';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import SEO from '../components/SEO';
+import { COMPANY_INFO } from '../constants/companyInfo';
 import siteVisitService from '../services/siteVisitService';
 import { breadcrumbSchema } from '../utils/seo';
 
@@ -54,8 +55,8 @@ export default function SiteVisitPage() {
   return (
     <main className="bg-white text-ink">
       <SEO
-        title="Book Site Visit | P4 Properties"
-        description="Book a private site visit with P4 Properties for residential and commercial properties across Chandigarh Tricity."
+        title={`Book Site Visit | ${COMPANY_INFO.companyName}`}
+        description={`Book a private site visit with ${COMPANY_INFO.companyName} for residential and commercial properties across Chandigarh Tricity.`}
         canonical="/site-visit"
         structuredData={[breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Site Visit', path: '/site-visit' }])]}
       />

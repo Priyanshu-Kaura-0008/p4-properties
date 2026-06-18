@@ -1,4 +1,5 @@
 import LegalPageLayout from './LegalPageLayout';
+import { COMPANY_INFO } from '../constants/companyInfo';
 
 const sections = [
   {
@@ -37,7 +38,7 @@ export default function CookiePolicy() {
   return (
     <LegalPageLayout
       title="Cookie Policy"
-      description="Understand how P4 Properties may use cookies for functionality, analytics, advertising measurement, and website performance."
+      description={`Understand how ${COMPANY_INFO.companyName} may use cookies for functionality, analytics, advertising measurement, and website performance.`}
       canonical="/cookie-policy"
       sections={sections}
     />

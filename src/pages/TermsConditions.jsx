@@ -1,10 +1,11 @@
 import LegalPageLayout from './LegalPageLayout';
+import { COMPANY_INFO } from '../constants/companyInfo';
 
 const sections = [
   {
     title: 'Acceptance of Terms',
     body: [
-      'By accessing or using the P4 Properties website, submitting an inquiry, booking a site visit, or communicating with our team, you agree to these Terms & Conditions.',
+      `By accessing or using the ${COMPANY_INFO.companyName} website, submitting an inquiry, booking a site visit, or communicating with our team, you agree to these Terms & Conditions.`,
     ],
   },
   {
@@ -22,7 +23,7 @@ const sections = [
   {
     title: 'Third Party Projects',
     body: [
-      'Some properties, projects, images, brochures, approvals, and specifications may be provided by third party builders, developers, sellers, or marketing partners. P4 Properties is not responsible for changes made by third parties.',
+      `Some properties, projects, images, brochures, approvals, and specifications may be provided by third party builders, developers, sellers, or marketing partners. ${COMPANY_INFO.companyName} is not responsible for changes made by third parties.`,
     ],
   },
   {
@@ -34,13 +35,13 @@ const sections = [
   {
     title: 'Limitation of Liability',
     body: [
-      'P4 Properties shall not be liable for losses arising from reliance on website information, third party project details, pricing changes, availability changes, market fluctuation, or investment decisions made by users.',
+      `${COMPANY_INFO.companyName} shall not be liable for losses arising from reliance on website information, third party project details, pricing changes, availability changes, market fluctuation, or investment decisions made by users.`,
     ],
   },
   {
     title: 'Contact Information',
     body: [
-      'For questions about these terms, contact P4 Properties at info@p4properties.in.',
+      `For questions about these terms, contact ${COMPANY_INFO.companyName} at ${COMPANY_INFO.email}.`,
     ],
   },
 ];
@@ -49,7 +50,7 @@ export default function TermsConditions() {
   return (
     <LegalPageLayout
       title="Terms & Conditions"
-      description="Review the terms for using the P4 Properties website, property information, advisory services, and lead forms."
+      description={`Review the terms for using the ${COMPANY_INFO.companyName} website, property information, advisory services, and lead forms.`}
       canonical="/terms-conditions"
       sections={sections}
     />

@@ -1,4 +1,5 @@
 import { FaPhoneAlt, FaWhatsapp } from 'react-icons/fa';
+import { COMPANY_INFO, CONTACT_LINKS } from '../constants/companyInfo';
 import { trackEvent } from '../utils/tracking';
 
 const formatPrice = (price) => {
@@ -20,11 +21,11 @@ export default function PropertySidebar({ property }) {
         <a href="/site-visit" className="rounded-xl border border-ink/15 px-5 py-3 text-center text-sm font-extrabold uppercase tracking-[0.14em] text-ink transition-colors hover:border-gold hover:text-gold">
           Schedule Visit
         </a>
-        <a href="tel:+918195002006" onClick={() => trackEvent('phone_click', { source: 'property_sidebar', property_title: property.title })} className="inline-flex items-center justify-center gap-2 rounded-xl bg-night px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white transition-colors hover:bg-gold hover:text-night">
+        <a href={CONTACT_LINKS.phone} onClick={() => trackEvent('phone_click', { source: 'property_sidebar', property_title: property.title })} className="inline-flex items-center justify-center gap-2 rounded-xl bg-night px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white transition-colors hover:bg-gold hover:text-night">
           <FaPhoneAlt aria-hidden="true" />
           Call Advisor
         </a>
-        <a href={`https://wa.me/918195002006?text=${encodeURIComponent(`I am interested in ${property.title}`)}`} onClick={() => trackEvent('whatsapp_click', { source: 'property_sidebar', property_title: property.title })} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-ink/15 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-ink transition-colors hover:border-gold hover:text-gold">
+        <a href={`https://wa.me/${COMPANY_INFO.whatsapp}?text=${encodeURIComponent(`I am interested in ${property.title}`)}`} onClick={() => trackEvent('whatsapp_click', { source: 'property_sidebar', property_title: property.title })} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-ink/15 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-ink transition-colors hover:border-gold hover:text-gold">
           <FaWhatsapp aria-hidden="true" />
           WhatsApp
         </a>

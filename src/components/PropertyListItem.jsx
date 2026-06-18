@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { FaBath, FaBed, FaCar, FaHeart, FaMapMarkerAlt, FaRulerCombined, FaWhatsapp } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { COMPANY_INFO } from '../constants/companyInfo';
 
 export default function PropertyListItem({ property }) {
   return (
@@ -83,7 +84,7 @@ export default function PropertyListItem({ property }) {
             View Details
           </Link>
           <a
-            href={`https://wa.me/918195002006?text=I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
+            href={`https://wa.me/${COMPANY_INFO.whatsapp}?text=I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-ink/15 px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-ink transition-colors hover:border-gold hover:text-gold"
           >
             <FaWhatsapp aria-hidden="true" />

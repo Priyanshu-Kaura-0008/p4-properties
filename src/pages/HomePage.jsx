@@ -10,13 +10,14 @@ import PropertySearch from '../components/PropertySearch';
 import SEO from '../components/SEO';
 import ServicesSection from '../components/ServicesSection';
 import TestimonialsSection from '../components/TestimonialsSection';
+import { COMPANY_INFO } from '../constants/companyInfo';
 
 export default function HomePage() {
   return (
     <main className="bg-white text-ink">
       <SEO
-        title="P4 Properties | Property Dealer Chandigarh & Luxury Real Estate Tricity"
-        description="Find luxury homes in Panchkula, residential properties in Mohali, commercial properties in Chandigarh, and property investment opportunities in New Chandigarh with P4 Properties."
+        title={`${COMPANY_INFO.companyName} | Property Dealer Chandigarh & Luxury Real Estate Tricity`}
+        description={`Find luxury homes in Panchkula, residential properties in Mohali, commercial properties in Chandigarh, and property investment opportunities in New Chandigarh with ${COMPANY_INFO.companyName}.`}
         canonical="/"
       />
       <Navbar />

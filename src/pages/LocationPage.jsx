@@ -3,6 +3,7 @@ import FloatingActions from '../components/FloatingActions';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import SEO from '../components/SEO';
+import { COMPANY_INFO } from '../constants/companyInfo';
 import { locationOptions } from '../data/siteData';
 import { breadcrumbSchema, locationSlug } from '../utils/seo';
 
@@ -22,12 +23,12 @@ const findLocation = (slug = '') => locationOptions.find((location) => locationS
 export default function LocationPage() {
   const { location } = useParams();
   const city = findLocation(location);
-  const description = `Explore ${descriptions[city]} with P4 Properties. Get expert guidance for verified properties, site visits, and investment planning in ${city}.`;
+  const description = `Explore ${descriptions[city]} with ${COMPANY_INFO.companyName}. Get expert guidance for verified properties, site visits, and investment planning in ${city}.`;
 
   return (
     <main className="bg-white text-ink">
       <SEO
-        title={`Properties in ${city} | P4 Properties Real Estate Consultant`}
+        title={`Properties in ${city} | ${COMPANY_INFO.companyName} Real Estate Consultant`}
         description={description}
         canonical={`/locations/${locationSlug(city)}`}
         structuredData={[

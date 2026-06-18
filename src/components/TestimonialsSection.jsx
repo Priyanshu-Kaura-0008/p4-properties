@@ -4,6 +4,7 @@ import { FaQuoteLeft, FaStar } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { COMPANY_INFO } from '../constants/companyInfo';
 import testimonialService from '../services/testimonialService';
 import 'swiper/css';
 
@@ -200,7 +201,7 @@ function TestimonialCard({ testimonial }) {
         <div className="flex items-center gap-4">
           <img
             src={testimonial.image?.url || testimonial.image}
-            alt={`${testimonial.name}, P4 Properties client from ${testimonial.location}`}
+            alt={`${testimonial.name}, ${COMPANY_INFO.companyName} client from ${testimonial.location}`}
             loading="lazy"
             className="h-16 w-16 rounded-full border-2 border-gold/60 object-cover shadow-soft transition-transform duration-300 group-hover:scale-105"
           />

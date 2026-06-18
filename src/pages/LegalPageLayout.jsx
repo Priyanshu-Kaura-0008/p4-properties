@@ -3,11 +3,12 @@ import Navbar from '../components/Navbar';
 import SEO from '../components/SEO';
 import SectionHeading from '../components/SectionHeading';
 import { Link } from 'react-router-dom';
+import { COMPANY_INFO } from '../constants/companyInfo';
 
 export default function LegalPageLayout({ title, description, canonical, sections }) {
   return (
     <main className="bg-white text-ink">
-      <SEO title={`${title} | P4 Properties`} description={description} canonical={canonical} />
+      <SEO title={`${title} | ${COMPANY_INFO.companyName}`} description={description} canonical={canonical} />
       <Navbar />
 
       <section className="relative overflow-hidden bg-night px-4 pb-16 pt-28 text-white md:pb-20 md:pt-36">

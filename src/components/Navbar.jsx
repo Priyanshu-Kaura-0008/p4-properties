@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
+import { COMPANY_INFO } from '../constants/companyInfo';
 import { navLinks } from '../data/siteData';
 
 const linkToPath = (label) => {
@@ -19,6 +20,8 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const [brandFirst, ...brandRestParts] = COMPANY_INFO.companyName.split(' ');
+  const brandRest = brandRestParts.join(' ');
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
@@ -44,7 +47,7 @@ export default function Navbar() {
     >
       <nav className="container-p4 flex h-20 items-center justify-between" aria-label="Primary navigation">
         <Link to="/" className={`font-display text-2xl font-bold ${isScrolled || isOpen ? 'text-ink' : 'text-white'}`}>
-          P4 <span className="text-gold">Properties</span>
+          {brandFirst} <span className="text-gold">{brandRest}</span>
         </Link>
 
         <div className="hidden items-center gap-6 xl:flex">

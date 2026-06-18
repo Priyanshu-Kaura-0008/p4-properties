@@ -13,6 +13,7 @@ import PropertyPagination from '../components/PropertyPagination';
 import PropertySortBar from '../components/PropertySortBar';
 import SectionHeading from '../components/SectionHeading';
 import SEO from '../components/SEO';
+import { COMPANY_INFO, CONTACT_LINKS } from '../constants/companyInfo';
 import propertyService from '../services/propertyService';
 import { breadcrumbSchema } from '../utils/seo';
 
@@ -49,30 +50,30 @@ const sortMap = {
 const cityPages = {
   '/properties/chandigarh': {
     city: 'Chandigarh',
-    title: 'Property Dealer Chandigarh | P4 Properties',
+    title: `Property Dealer Chandigarh | ${COMPANY_INFO.companyName}`,
     description:
-      'Explore verified residential and commercial properties in Chandigarh with P4 Properties, a trusted property dealer for premium homes, SCOs, offices, and investment opportunities.',
+      `Explore verified residential and commercial properties in Chandigarh with ${COMPANY_INFO.companyName}, a trusted property dealer for premium homes, SCOs, offices, and investment opportunities.`,
     h1: 'Property Dealer Chandigarh',
   },
   '/properties/mohali': {
     city: 'Mohali',
-    title: 'Real Estate Mohali | P4 Properties',
+    title: `Real Estate Mohali | ${COMPANY_INFO.companyName}`,
     description:
-      'Browse live real estate listings in Mohali including luxury villas, apartments, plots, shops, offices, and commercial investments with P4 Properties.',
+      `Browse live real estate listings in Mohali including luxury villas, apartments, plots, shops, offices, and commercial investments with ${COMPANY_INFO.companyName}.`,
     h1: 'Real Estate Mohali',
   },
   '/properties/panchkula': {
     city: 'Panchkula',
-    title: 'Luxury Homes Panchkula | P4 Properties',
+    title: `Luxury Homes Panchkula | ${COMPANY_INFO.companyName}`,
     description:
-      'Find luxury homes in Panchkula with verified villas, independent floors, premium apartments, and residential investment options curated by P4 Properties.',
+      `Find luxury homes in Panchkula with verified villas, independent floors, premium apartments, and residential investment options curated by ${COMPANY_INFO.companyName}.`,
     h1: 'Luxury Homes Panchkula',
   },
   '/properties/new-chandigarh': {
     city: 'New Chandigarh',
-    title: 'Property Investment New Chandigarh | P4 Properties',
+    title: `Property Investment New Chandigarh | ${COMPANY_INFO.companyName}`,
     description:
-      'Discover property investment opportunities in New Chandigarh including plots, villas, apartments, and growth corridor real estate options with P4 Properties.',
+      `Discover property investment opportunities in New Chandigarh including plots, villas, apartments, and growth corridor real estate options with ${COMPANY_INFO.companyName}.`,
     h1: 'Property Investment New Chandigarh',
   },
 };
@@ -269,7 +270,7 @@ export default function PropertiesPage() {
       transition={{ duration: 0.35 }}
     >
       <SEO
-        title={cityPage?.title || (searchParams.get('location') ? `${searchParams.get('location')} Properties | P4 Properties` : 'Properties for Sale & Rent | P4 Properties Chandigarh Tricity')}
+        title={cityPage?.title || (searchParams.get('location') ? `${searchParams.get('location')} Properties | ${COMPANY_INFO.companyName}` : `Properties for Sale & Rent | ${COMPANY_INFO.companyName} Chandigarh Tricity`)}
         description={cityPage?.description || 'Browse verified residential and commercial properties across Chandigarh, Mohali, Panchkula, New Chandigarh, Kharar, Kurali, and Rajpura with advanced filters and expert consultation.'}
         canonical={cityPage ? location.pathname : '/properties'}
         structuredData={[breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Properties', path: '/properties' }])]}
@@ -393,7 +394,7 @@ export default function PropertiesPage() {
               Schedule Site Visit
             </a>
             <a
-              href="tel:+918195002006"
+              href={CONTACT_LINKS.phone}
               className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/40 px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-white transition-colors hover:border-gold hover:text-gold"
             >
               Call Us Today

@@ -7,6 +7,7 @@ import Navbar from '../components/Navbar';
 import SEO from '../components/SEO';
 import ErrorState from '../components/common/ErrorState';
 import Loading from '../components/common/Loading';
+import { COMPANY_INFO } from '../constants/companyInfo';
 import blogService from '../services/blogService';
 import { breadcrumbSchema } from '../utils/seo';
 
@@ -49,8 +50,8 @@ export default function BlogsPage() {
   return (
     <main className="bg-ivory text-ink">
       <SEO
-        title="Real Estate Blogs | P4 Properties"
-        description="Read P4 Properties market insights, property guides, and real estate updates for Chandigarh Tricity."
+        title={`Real Estate Blogs | ${COMPANY_INFO.companyName}`}
+        description={`Read ${COMPANY_INFO.companyName} market insights, property guides, and real estate updates for Chandigarh Tricity.`}
         canonical="/blogs"
         structuredData={[breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Blogs', path: '/blogs' }])]}
       />
@@ -59,7 +60,7 @@ export default function BlogsPage() {
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(212,175,55,.18),transparent_38%)]" />
         <div className="container-p4 relative z-10">
           <p className="text-xs font-bold uppercase tracking-[0.28em] text-gold">Market Insights</p>
-          <h1 className="mt-4 font-display text-4xl font-bold sm:text-5xl md:text-7xl">P4 Properties Blog</h1>
+          <h1 className="mt-4 font-display text-4xl font-bold sm:text-5xl md:text-7xl">{COMPANY_INFO.companyName} Blog</h1>
         </div>
       </section>
 

@@ -1,10 +1,11 @@
 import LegalPageLayout from './LegalPageLayout';
+import { COMPANY_INFO } from '../constants/companyInfo';
 
 const sections = [
   {
     title: 'Introduction',
     body: [
-      'P4 Properties is a real estate advisory business serving Chandigarh Tricity, including Chandigarh, Mohali, Panchkula, and nearby growth corridors. This Privacy Policy explains how we collect, use, protect, and manage information submitted through our website, contact forms, site visit forms, lead generation forms, and advertising campaigns.',
+      `${COMPANY_INFO.companyName} is a real estate advisory business serving Chandigarh Tricity, including Chandigarh, Mohali, Panchkula, and nearby growth corridors. This Privacy Policy explains how we collect, use, protect, and manage information submitted through our website, contact forms, site visit forms, lead generation forms, and advertising campaigns.`,
     ],
   },
   {
@@ -45,7 +46,7 @@ const sections = [
     body: [
       'You may submit your information through Facebook or Instagram advertisements, including Meta Lead Forms. Information submitted through these ads may include your name, phone number, email address, location preference, property type, and budget.',
       'We use this information only for property consultation, site visit coordination, follow-up communication, and matching you with suitable property opportunities.',
-      'P4 Properties does not sell your personal information. You may request access, correction, or deletion of your data by contacting us at info@p4properties.in.',
+      `${COMPANY_INFO.companyName} does not sell your personal information. You may request access, correction, or deletion of your data by contacting us at ${COMPANY_INFO.email}.`,
     ],
   },
   {
@@ -63,7 +64,7 @@ const sections = [
   {
     title: 'Contact Information',
     body: [
-      'For privacy questions, data requests, or deletion requests, contact P4 Properties at info@p4properties.in. We will make reasonable efforts to respond to legitimate requests in a timely manner.',
+      `For privacy questions, data requests, or deletion requests, contact ${COMPANY_INFO.companyName} at ${COMPANY_INFO.email}. We will make reasonable efforts to respond to legitimate requests in a timely manner.`,
     ],
   },
 ];
@@ -72,7 +73,7 @@ export default function PrivacyPolicy() {
   return (
     <LegalPageLayout
       title="Privacy Policy"
-      description="Learn how P4 Properties collects, uses, protects, and manages lead, inquiry, site visit, analytics, and advertising data."
+      description={`Learn how ${COMPANY_INFO.companyName} collects, uses, protects, and manages lead, inquiry, site visit, analytics, and advertising data.`}
       canonical="/privacy-policy"
       sections={sections}
     />

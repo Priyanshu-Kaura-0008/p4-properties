@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { COMPANY_INFO } from '../constants/companyInfo';
 import propertyService from '../services/propertyService';
 import 'swiper/css';
 
@@ -75,7 +76,7 @@ export default function FeaturedProperties() {
             <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-gold">Selected Portfolio</p>
             <h2 className="font-display text-3xl font-bold leading-tight md:text-5xl">Featured Properties</h2>
             <p className="mt-4 max-w-2xl leading-8 text-white/72">
-              Handpicked residential and commercial opportunities from the P4 Properties portfolio.
+              Handpicked residential and commercial opportunities from the {COMPANY_INFO.companyName} portfolio.
             </p>
           </div>
           <Link
@@ -93,7 +94,7 @@ export default function FeaturedProperties() {
         ) : properties.length === 0 ? (
           <FeaturedState
             title="No featured properties yet"
-            message="Explore the complete P4 Properties portfolio for available opportunities."
+            message={`Explore the complete ${COMPANY_INFO.companyName} portfolio for available opportunities.`}
           />
         ) : (
           <>

@@ -4,6 +4,7 @@ import omPrakashDhiman from '../assets/founders/om-prakash-dhiman.svg';
 import pardeepAggarwal from '../assets/founders/pardeep-aggarwal.svg';
 import pardeepGarg from '../assets/founders/pardeep-garg.svg';
 import priyanshuKaura from '../assets/founders/priyanshu-kaura.svg';
+import { COMPANY_INFO } from '../constants/companyInfo';
 
 const founders = [
   {
@@ -96,7 +97,7 @@ function FounderCard({ founder }) {
         <div className="overflow-hidden rounded-full">
           <motion.img
             src={founder.image}
-            alt={`${founder.name}, ${founder.title} at P4 Properties`}
+            alt={`${founder.name}, ${founder.title} at ${COMPANY_INFO.companyName}`}
             className="h-28 w-28 rounded-full object-cover sm:h-36 sm:w-36"
             whileHover={{ scale: 1.08 }}
             transition={{ duration: 0.35 }}

@@ -7,6 +7,7 @@ import Navbar from '../components/Navbar';
 import SEO from '../components/SEO';
 import ErrorState from '../components/common/ErrorState';
 import Loading from '../components/common/Loading';
+import { COMPANY_INFO } from '../constants/companyInfo';
 import blogService from '../services/blogService';
 import { breadcrumbSchema } from '../utils/seo';
 
@@ -49,7 +50,7 @@ export default function BlogDetailsPage() {
   return (
     <main className="bg-white text-ink">
       <SEO
-        title={`${blog.title} | P4 Properties`}
+        title={`${blog.title} | ${COMPANY_INFO.companyName}`}
         description={blog.excerpt || blog.content?.slice(0, 155)}
         image={blog.coverImage?.url || fallbackImage}
         canonical={`/blogs/${blog.slug}`}

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { FaCalendarCheck, FaCheckCircle, FaHome, FaPhoneAlt, FaWhatsapp } from 'react-icons/fa';
+import { CONTACT_LINKS } from '../constants/companyInfo';
 import { locationOptions } from '../data/siteData';
 import siteVisitService from '../services/siteVisitService';
 import { trackEvent } from '../utils/tracking';
@@ -71,11 +72,11 @@ export default function LeadGenerationSection() {
             </div>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row lg:mt-9">
-              <a href="tel:+918195002006" onClick={() => trackEvent('phone_click', { source: 'lead_generation_section' })} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold px-6 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-all hover:-translate-y-1 hover:bg-white">
+              <a href={CONTACT_LINKS.phone} onClick={() => trackEvent('phone_click', { source: 'lead_generation_section' })} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gold px-6 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-night transition-all hover:-translate-y-1 hover:bg-white">
                 <FaPhoneAlt aria-hidden="true" />
                 Call Now
               </a>
-              <a href="https://wa.me/918195002006" onClick={() => trackEvent('whatsapp_click', { source: 'lead_generation_section' })} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-white backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-gold hover:text-gold">
+              <a href={CONTACT_LINKS.whatsapp} onClick={() => trackEvent('whatsapp_click', { source: 'lead_generation_section' })} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-extrabold uppercase tracking-[0.14em] text-white backdrop-blur-xl transition-all hover:-translate-y-1 hover:border-gold hover:text-gold">
                 <FaWhatsapp aria-hidden="true" />
                 WhatsApp Us
               </a>

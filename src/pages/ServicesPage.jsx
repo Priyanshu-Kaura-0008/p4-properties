@@ -3,6 +3,7 @@ import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import SEO from '../components/SEO';
 import ServicesSection from '../components/ServicesSection';
+import { COMPANY_INFO } from '../constants/companyInfo';
 import { breadcrumbSchema } from '../utils/seo';
 
 export default function ServicesPage() {
@@ -10,7 +11,7 @@ export default function ServicesPage() {
     <main className="bg-white text-ink">
       <SEO
         title="Real Estate Services | Residential & Commercial Properties Chandigarh"
-        description="Explore P4 Properties services for residential properties in Mohali, commercial properties in Chandigarh, luxury homes in Panchkula, and investment consultancy across Tricity."
+        description={`Explore ${COMPANY_INFO.companyName} services for residential properties in Mohali, commercial properties in Chandigarh, luxury homes in Panchkula, and investment consultancy across Tricity.`}
         canonical="/services"
         structuredData={[breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Services', path: '/services' }])]}
       />

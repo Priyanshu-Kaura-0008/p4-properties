@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { FaCar, FaHeart, FaShareAlt, FaWhatsapp } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { COMPANY_INFO } from '../constants/companyInfo';
 import { icons } from '../data/siteData';
 
 const BedIcon = icons.bed;
@@ -140,7 +141,7 @@ function ListingPropertyCard({ property }) {
             View Details
           </Link>
           <a
-            href={`https://wa.me/918195002006?text=I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
+            href={`https://wa.me/${COMPANY_INFO.whatsapp}?text=I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-ink/15 px-5 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-ink transition-colors hover:border-gold hover:text-gold"
           >
             <FaWhatsapp aria-hidden="true" />

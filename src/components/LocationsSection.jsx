@@ -12,6 +12,7 @@ import newChandigarhImage from '../assets/locations/new_chandigarh.jpg';
 import panchkulaExtensionImage from '../assets/locations/panchkula_extention.png';
 import panchkulaImage from '../assets/locations/panchkula.jpg';
 import rajpuraImage from '../assets/locations/rajpura.jpg';
+import { COMPANY_INFO } from '../constants/companyInfo';
 
 const locationCards = [
   {
@@ -141,7 +142,7 @@ function LocationCard({ location, compact = false }) {
       <div className={`relative z-10 flex h-full flex-col justify-end text-white ${compact ? 'min-h-[280px] p-5' : 'min-h-[390px] p-6'}`}>
         <p className="mb-3 flex items-center gap-2 text-sm font-bold text-gold">
           <FaMapMarkerAlt aria-hidden="true" />
-          P4 Properties
+          {COMPANY_INFO.companyName}
         </p>
         <h3 className="font-display text-2xl font-bold leading-tight md:text-3xl">{location.city}</h3>
         <p className={`${compact ? 'mt-2 text-sm leading-6' : 'mt-3 min-h-[84px] leading-7'} text-white/78`}>{location.description}</p>

@@ -3,16 +3,10 @@ import { FaHandshake, FaRegCheckCircle, FaShieldAlt, FaUserTie } from 'react-ico
 import { Link } from 'react-router-dom';
 import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { COMPANY_INFO } from '../constants/companyInfo';
 import 'swiper/css';
 
-const locations = [
-  'Chandigarh',
-  'Mohali',
-  'Panchkula',
-  'Kharar',
-  'Kurali',
-  'New Chandigarh',
-];
+const locations = COMPANY_INFO.serviceAreas.filter((location) => location !== 'Rajpura');
 
 const pillars = [
   {
@@ -67,12 +61,12 @@ export default function AboutUs() {
           variants={itemVariants}
           className="w-full max-w-full rounded-2xl border border-white/70 bg-white/75 p-4 shadow-premium backdrop-blur-xl sm:p-5 md:p-10"
         >
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-gold md:mb-4 md:tracking-[0.28em]">About P4 Properties</p>
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-gold md:mb-4 md:tracking-[0.28em]">About {COMPANY_INFO.companyName}</p>
           <h2 className="font-display text-2xl font-bold leading-tight text-ink sm:text-3xl md:text-5xl">
             Building futures through trusted real estate guidance.
           </h2>
           <div className="mt-4 grid gap-3 text-base leading-7 text-muted md:mt-6 md:gap-5 md:text-lg md:leading-9">
-            <p>At P4 Properties, we believe real estate is more than transactions-it&apos;s about building futures.</p>
+            <p>At {COMPANY_INFO.companyName}, we believe real estate is more than transactions-it&apos;s about building futures.</p>
             <p className="hidden sm:block">
               Serving Chandigarh, Mohali, Panchkula, Kharar, Kurali, Panchkula Extension, New Chandigarh, and Rajpura,
               we provide expert guidance for residential and commercial property investments.

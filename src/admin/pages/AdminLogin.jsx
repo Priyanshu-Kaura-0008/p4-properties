@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { COMPANY_INFO } from '../../constants/companyInfo';
 import { useAuth } from '../../context/AuthContext';
 import { getApiErrorMessage } from '../../services/api';
 
@@ -32,7 +33,7 @@ export default function AdminLogin() {
         animate={{ opacity: 1, y: 0 }}
       >
         <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-gold">Admin Login</p>
-        <h1 className="mt-3 font-display text-3xl font-bold sm:text-4xl">P4 Properties</h1>
+        <h1 className="mt-3 font-display text-3xl font-bold sm:text-4xl">{COMPANY_INFO.companyName}</h1>
         <p className="mt-2 text-white/55">Luxury real estate command center.</p>
         <div className="mt-8 grid gap-4">
           <input className={input} placeholder="Email" type="email" {...register('email', { required: true })} />
