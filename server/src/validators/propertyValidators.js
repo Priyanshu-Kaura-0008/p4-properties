@@ -87,7 +87,7 @@ export const propertyQueryValidator = [
   query('maxArea').optional().isNumeric().withMessage('Maximum area must be numeric'),
   query('minLandArea').optional().isNumeric().withMessage('Minimum land area must be numeric'),
   query('maxLandArea').optional().isNumeric().withMessage('Maximum land area must be numeric'),
-  query('search').optional().trim().notEmpty().withMessage('Search cannot be empty'),
+  query('search').optional({ checkFalsy: true }).isString(),
   query('sort')
     .optional()
     .isIn(['latest', 'oldest', 'priceLow', 'priceHigh', 'largestArea', 'featured'])
