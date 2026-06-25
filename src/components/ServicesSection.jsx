@@ -67,13 +67,18 @@ export default function ServicesSection() {
         <motion.div variants={sectionVariants} className="w-full max-w-full overflow-hidden px-1 pb-2 sm:px-2 lg:hidden">
           <Swiper
             modules={[Autoplay]}
-            slidesPerView={1.2}
+            slidesPerView={1}
             spaceBetween={16}
-            centeredSlides
+            centeredSlides={false}
             loop
             speed={900}
-            autoplay={{ delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            autoplay={{ delay: 2500, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            className="hover-lift-swiper !px-0 !pb-2 !pt-4"
             breakpoints={{
+              414: {
+                slidesPerView: 1.08,
+                spaceBetween: 16,
+              },
               768: {
                 slidesPerView: 2,
                 spaceBetween: 20,
@@ -82,14 +87,14 @@ export default function ServicesSection() {
             }}
           >
             {mobileServices.map((service, index) => (
-              <SwiperSlide key={`${service.title}-${index}`} className="flex h-auto">
+              <SwiperSlide key={`${service.title}-${index}`} className="flex !h-auto">
                 <ServiceCard service={service} compact />
               </SwiperSlide>
             ))}
           </Swiper>
         </motion.div>
 
-        <motion.div className="hidden items-stretch gap-6 lg:grid lg:grid-cols-2 xl:grid-cols-3" variants={sectionVariants}>
+        <motion.div className="-mt-3 hidden items-stretch gap-6 pt-3 lg:grid lg:grid-cols-2 xl:grid-cols-3" variants={sectionVariants}>
           {services.map((service) => (
             <ServiceCard key={service.title} service={service} />
           ))}
@@ -106,9 +111,9 @@ function ServiceCard({ service, compact = false }) {
     <motion.article
       variants={cardVariants}
       whileHover={{ y: -10 }}
-      className={`group relative flex h-full w-full flex-col overflow-hidden rounded-2xl shadow-soft backdrop-blur-xl transition-shadow hover:shadow-premium ${
+      className={`group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl shadow-soft backdrop-blur-xl transition-shadow will-change-transform hover:shadow-premium ${
         compact
-          ? 'h-[460px] border border-white/25 bg-night p-5 text-white sm:h-[430px] md:h-[420px]'
+          ? 'min-h-[470px] border border-white/25 bg-night p-5 text-white'
           : 'min-h-[430px] border border-ink/10 bg-white/85 p-7'
       }`}
     >
@@ -116,16 +121,16 @@ function ServiceCard({ service, compact = false }) {
       <div className={`${compact ? 'relative z-10 mb-4 h-12 w-12 text-lg' : 'mb-6 h-16 w-16 text-2xl'} flex items-center justify-center rounded-2xl ${compact ? 'bg-gold text-night' : 'bg-night text-gold'} shadow-soft transition-all group-hover:bg-gold group-hover:text-night`}>
         <Icon aria-hidden="true" />
       </div>
-      <h3 className={`relative z-10 font-display text-2xl font-bold leading-tight ${compact ? 'text-white' : 'text-ink md:text-3xl'}`}>{service.title}</h3>
+      <h3 className={`relative z-10 break-words font-display text-2xl font-bold leading-tight ${compact ? 'text-white' : 'text-ink md:text-3xl'}`}>{service.title}</h3>
       <p className={`${compact ? 'relative z-10 mt-3 min-h-[72px] text-sm leading-6 text-white/78' : 'mt-4 leading-8 text-muted md:min-h-[84px]'}`}>{service.description}</p>
 
       <ul className={`${compact ? 'relative z-10 mt-4 min-h-[128px] gap-2' : 'mt-6 min-h-[132px] gap-3'} grid`} aria-label={`${service.title} services`}>
         {service.items.map((item) => (
-          <li key={item} className={`flex items-center gap-3 text-sm font-bold ${compact ? 'text-white/86' : 'text-ink'}`}>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/15 text-xs text-gold">
+          <li key={item} className={`flex min-w-0 items-center gap-3 text-sm font-bold ${compact ? 'text-white/86' : 'text-ink'}`}>
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold/15 text-xs text-gold">
               <FaCheck aria-hidden="true" />
             </span>
-            {item}
+            <span className="break-words">{item}</span>
           </li>
         ))}
       </ul>

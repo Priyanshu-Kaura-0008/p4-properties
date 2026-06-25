@@ -11,22 +11,22 @@ export default function PropertyLocation({ property }) {
 
   return (
     <motion.section
-      className="rounded-2xl border border-ink/10 bg-white/85 p-7 shadow-soft backdrop-blur-xl"
+      className="rounded-lg border border-ink/10 bg-white/90 p-5 shadow-soft backdrop-blur-xl sm:p-7 lg:p-8"
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.6 }}
     >
-      <h2 className="font-display text-3xl font-bold text-ink">Location</h2>
-      <p className="mt-3 flex items-center gap-2 leading-8 text-muted">
-        <FaMapMarkerAlt className="text-gold" aria-hidden="true" />
+      <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">Location</h2>
+      <p className="mt-3 flex min-w-0 items-start gap-2 break-words leading-8 text-muted">
+        <FaMapMarkerAlt className="mt-1 shrink-0 text-gold" aria-hidden="true" />
         {locationText}
       </p>
-      <div className="mt-6 overflow-hidden rounded-2xl border border-ink/10">
+      <div className="mt-6 overflow-hidden rounded-lg border border-ink/10">
         <iframe
           title={`Map location for ${property.title}`}
           src={mapUrl}
-          className="h-[380px] w-full"
+          className="h-[300px] w-full sm:h-[380px]"
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
         />
@@ -35,7 +35,7 @@ export default function PropertyLocation({ property }) {
         href={directionsUrl}
         target="_blank"
         rel="noreferrer"
-        className="mt-5 inline-flex items-center gap-3 rounded-xl bg-night px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white transition-colors hover:bg-gold hover:text-night"
+        className="mt-5 inline-flex min-h-12 max-w-full items-center justify-center gap-3 rounded-lg bg-night px-5 py-3 text-center text-xs font-extrabold uppercase tracking-[0.1em] text-white transition-colors hover:bg-gold hover:text-night sm:px-6 sm:text-sm sm:tracking-[0.14em]"
       >
         <FaDirections aria-hidden="true" />
         Get Directions

@@ -5,7 +5,7 @@ import siteVisitService from '../services/siteVisitService';
 import { trackEvent } from '../utils/tracking';
 
 const inputClass =
-  'min-h-12 w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm font-semibold text-ink outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/15';
+  'min-h-12 w-full min-w-0 rounded-lg border border-ink/10 bg-white px-4 py-3 text-sm font-semibold text-ink outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/15';
 
 const budgetOptions = ['Under Rs. 50 Lakhs', 'Rs. 50 Lakhs - Rs. 1 Crore', 'Rs. 1 Crore - Rs. 2 Crores', 'Rs. 2 Crores - Rs. 5 Crores', 'Above Rs. 5 Crores'];
 const propertyTypes = ['Villa', 'Apartment', 'Independent Floor', 'Plot', 'SCO', 'Shop', 'Office', 'Commercial Land'];
@@ -52,14 +52,14 @@ export default function ScheduleVisit({ property }) {
   return (
     <motion.section
       id="site-visit"
-      className="rounded-2xl border border-ink/10 bg-white/85 p-5 shadow-soft backdrop-blur-xl sm:p-7"
+      className="rounded-lg border border-ink/10 bg-white/90 p-5 shadow-soft backdrop-blur-xl sm:p-7 lg:p-8"
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.6 }}
     >
       <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">Schedule a Site Visit</h2>
-      <p className="mt-3 leading-8 text-muted">Share your preferred date and time for a private walkthrough.</p>
+      <p className="mt-3 max-w-3xl leading-8 text-muted">Share your preferred date and time for a private walkthrough.</p>
       <form onSubmit={submit} className="mt-7 grid gap-4 md:grid-cols-2">
         <Field label="Full Name"><input className={inputClass} value={form.name} onChange={(e) => update('name', e.target.value)} required /></Field>
         <Field label="Phone Number"><input className={inputClass} inputMode="numeric" pattern="[6-9][0-9]{9}" value={form.phone} onChange={(e) => update('phone', e.target.value)} required /></Field>
@@ -87,7 +87,7 @@ export default function ScheduleVisit({ property }) {
         <Field label="Preferred Time"><input className={inputClass} type="time" value={form.preferredTime} onChange={(e) => update('preferredTime', e.target.value)} required /></Field>
         <Field label="Remarks" span><textarea className={`${inputClass} min-h-32`} value={form.remarks} onChange={(e) => update('remarks', e.target.value)} /></Field>
         {status && <p className="text-sm font-semibold text-muted md:col-span-2">{status}</p>}
-        <button disabled={submitting} className="min-h-12 rounded-xl bg-gold px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-night transition-colors hover:bg-night hover:text-white disabled:opacity-60 md:col-span-2" type="submit">
+        <button disabled={submitting} className="min-h-12 rounded-lg bg-gold px-6 py-4 text-xs font-extrabold uppercase tracking-[0.1em] text-night transition-colors hover:bg-night hover:text-white disabled:opacity-60 sm:text-sm sm:tracking-[0.14em] md:col-span-2" type="submit">
           {submitting ? 'Scheduling...' : 'Schedule Visit'}
         </button>
       </form>
@@ -96,5 +96,5 @@ export default function ScheduleVisit({ property }) {
 }
 
 function Field({ label, children, span }) {
-  return <label className={`grid gap-2 text-sm font-bold text-ink ${span ? 'md:col-span-2' : ''}`}>{label}{children}</label>;
+  return <label className={`grid min-w-0 gap-2 text-sm font-bold text-ink ${span ? 'md:col-span-2' : ''}`}>{label}{children}</label>;
 }

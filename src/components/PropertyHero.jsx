@@ -6,19 +6,19 @@ export default function PropertyHero({
   subtitle = 'Explore carefully selected residential and commercial opportunities across Tricity.',
 }) {
   return (
-    <section className="relative flex h-[45vh] min-h-[360px] items-center overflow-hidden bg-night pt-20">
+    <section className="relative flex h-[45vh] min-h-[360px] w-full max-w-full items-center overflow-hidden bg-night pt-20">
       {/* Listings page hero */}
       <img
         src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2200&q=85"
         alt="Luxury property exterior"
         loading="eager"
         decoding="async"
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 block h-full w-full max-w-full object-cover"
       />
       <div className="absolute inset-0 bg-night/62" />
-      <div className="container-p4 relative z-10 text-white">
+      <div className="container-p4 relative z-10 min-w-0 text-white">
         <motion.nav
-          className="mb-5 flex items-center gap-3 text-sm font-semibold text-white/72"
+          className="mb-5 flex min-w-0 flex-wrap items-center gap-3 text-sm font-semibold text-white/72"
           aria-label="Breadcrumb"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -31,7 +31,7 @@ export default function PropertyHero({
           <span className="text-gold">Properties</span>
         </motion.nav>
         <motion.h1
-          className="font-display text-4xl font-bold leading-tight sm:text-5xl md:text-7xl"
+          className="break-words font-display text-4xl font-bold leading-tight sm:text-5xl md:text-7xl"
           initial={{ opacity: 0, y: 26 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.05 }}
@@ -39,7 +39,7 @@ export default function PropertyHero({
           {title}
         </motion.h1>
         <motion.p
-          className="mt-5 max-w-2xl text-lg leading-8 text-white/78 md:text-xl"
+          className="mt-5 max-w-2xl break-words text-lg leading-8 text-white/78 md:text-xl"
           initial={{ opacity: 0, y: 26 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.14 }}

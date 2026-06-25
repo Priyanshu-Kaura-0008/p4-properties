@@ -263,7 +263,7 @@ export default function PropertiesPage() {
 
   return (
     <motion.main
-      className="bg-white text-ink"
+      className="w-full max-w-full overflow-x-hidden bg-white text-ink"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -279,7 +279,7 @@ export default function PropertiesPage() {
       <PropertyHero title={cityPage?.h1} subtitle={cityPage?.description} />
 
       <section className="bg-ivory py-12 md:py-16">
-        <div className="container-p4 grid gap-8 lg:grid-cols-[320px_1fr]">
+        <div className="container-p4 grid min-w-0 gap-8 lg:grid-cols-[320px_minmax(0,1fr)]">
           <PropertyFilters
             filters={filters}
             onToggle={toggleFilter}
@@ -290,9 +290,9 @@ export default function PropertiesPage() {
             onClose={() => setIsDrawerOpen(false)}
           />
 
-          <div>
-            <form onSubmit={handleSearchSubmit} className="mb-5 grid gap-3 rounded-xl border border-ink/10 bg-white p-4 shadow-soft sm:grid-cols-[1fr_auto]">
-              <div className="grid gap-3 md:grid-cols-3">
+          <div className="min-w-0">
+            <form onSubmit={handleSearchSubmit} className="mb-5 grid min-w-0 gap-3 rounded-xl border border-ink/10 bg-white p-4 shadow-soft sm:grid-cols-[minmax(0,1fr)_auto]">
+              <div className="grid min-w-0 gap-3 md:grid-cols-3">
                 <input
                   name="search"
                   defaultValue={filters.search}

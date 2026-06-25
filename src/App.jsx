@@ -1,9 +1,10 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import GoogleAnalytics from './components/GoogleAnalytics.jsx';
 import MetaPixel from './components/MetaPixel.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
+import { initOverflowDebug } from './utils/overflowDebug.js';
 const HomePage = lazy(() => import('./pages/HomePage.jsx'));
 const PropertiesPage = lazy(() => import('./pages/PropertiesPage.jsx'));
 const PropertyDetailsPage = lazy(() => import('./pages/PropertyDetailsPage.jsx'));
@@ -33,8 +34,10 @@ const SiteVisitsAdmin = lazy(() => import('./admin/pages/SiteVisitsAdmin.jsx'));
 const TestimonialsAdmin = lazy(() => import('./admin/pages/TestimonialsAdmin.jsx'));
 
 export default function App() {
+  useEffect(() => initOverflowDebug(), []);
+
   return (
-    <>
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden">
       <GoogleAnalytics />
       <MetaPixel />
       <Toaster
@@ -85,6 +88,6 @@ export default function App() {
           <Route path="*" element={<HomePage />} />
         </Routes>
       </Suspense>
-    </>
+    </div>
   );
 }

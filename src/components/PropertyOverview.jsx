@@ -10,36 +10,44 @@ const formatPrice = (price) => {
   return `Rs. ${value.toLocaleString('en-IN')}`;
 };
 
+const formatLabel = (value) =>
+  String(value || '-')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[-_]+/g, ' ')
+    .trim();
+
 export default function PropertyOverview({ property }) {
   const [expanded, setExpanded] = useState(false);
-  const shouldClamp = property.description?.length > 280;
-  const description = !shouldClamp || expanded ? property.description : `${property.description.slice(0, 280)}...`;
-  const location = [property.location || property.locality, property.city].filter(Boolean).join(', ');
+  const rawDescription = property.description || 'Property details are available on request.';
+  const shouldClamp = rawDescription.length > 420;
+  const description = !shouldClamp || expanded ? rawDescription : `${rawDescription.slice(0, 420)}...`;
+  const location = [property.location || property.locality, property.city].filter(Boolean).map(formatLabel).join(', ');
+  const address = formatLabel(property.address);
 
   return (
-    <div className="grid gap-8">
+    <div className="grid gap-6 md:gap-8">
       <motion.header
-        className="rounded-2xl border border-ink/10 bg-white/85 p-5 shadow-soft backdrop-blur-xl sm:p-7"
+        className="rounded-lg border border-ink/10 bg-white/90 p-5 shadow-soft backdrop-blur-xl sm:p-7 lg:p-8"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.6 }}
       >
-        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-gold sm:text-sm sm:tracking-[0.18em]">
-          <FaMapMarkerAlt aria-hidden="true" />
+        <p className="flex min-w-0 items-start gap-2 break-words text-xs font-bold uppercase leading-6 tracking-[0.1em] text-gold sm:items-center sm:text-sm sm:tracking-[0.16em]">
+          <FaMapMarkerAlt className="mt-1 shrink-0 sm:mt-0" aria-hidden="true" />
           {location || property.address}
         </p>
-        <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h2 className="font-display text-3xl font-bold leading-tight text-ink sm:text-4xl md:text-5xl">{property.title}</h2>
-            <p className="mt-3 text-muted">{property.address}</p>
+        <div className="mt-4 grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <div className="min-w-0">
+            <h2 className="overflow-wrap-anywhere font-display text-3xl font-bold leading-tight text-ink sm:text-4xl md:text-5xl">{formatLabel(property.title)}</h2>
+            <p className="mt-3 max-w-3xl overflow-wrap-anywhere leading-7 text-muted">{address}</p>
           </div>
-          <p className="text-2xl font-extrabold text-gold sm:text-3xl">{formatPrice(property.price)}</p>
+          <p className="shrink-0 text-2xl font-extrabold leading-tight text-gold sm:text-3xl">{formatPrice(property.price)}</p>
         </div>
       </motion.header>
 
       <motion.div
-        className="grid gap-4 rounded-2xl border border-ink/10 bg-white/85 p-5 shadow-soft backdrop-blur-xl sm:grid-cols-2 xl:grid-cols-5"
+        className="grid grid-cols-2 items-stretch gap-3 rounded-lg border border-ink/10 bg-white/90 p-4 shadow-soft backdrop-blur-xl sm:gap-4 sm:p-5 lg:grid-cols-3 2xl:grid-cols-5"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
@@ -47,20 +55,20 @@ export default function PropertyOverview({ property }) {
       >
         <Fact icon={FaBed} label="Bedrooms" value={property.bedrooms || '-'} />
         <Fact icon={FaBath} label="Bathrooms" value={property.bathrooms || '-'} />
-        <Fact icon={FaRulerCombined} label="Area" value={`${Number(property.area || property.landArea || 0).toLocaleString('en-IN')} ${property.areaUnit || 'Sq.ft.'}`} />
+        <Fact icon={FaRulerCombined} label="Area" value={`${Number(property.area || property.landArea || 0).toLocaleString('en-IN')} ${formatLabel(property.areaUnit || 'Sq.ft.')}`} />
         <Fact icon={FaCar} label="Parking" value={property.parking || '-'} />
-        <Fact icon={FaHome} label="Property Type" value={property.propertyType} />
+        <Fact icon={FaHome} label="Property Type" value={formatLabel(property.propertyType)} />
       </motion.div>
 
       <motion.section
-        className="rounded-2xl border border-ink/10 bg-white/85 p-5 shadow-soft backdrop-blur-xl sm:p-7"
+        className="rounded-lg border border-ink/10 bg-white/90 p-5 shadow-soft backdrop-blur-xl sm:p-7 lg:p-8"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.6 }}
       >
         <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">Property Overview</h2>
-        <p className="mt-4 leading-8 text-muted">{description}</p>
+        <p className="mt-4 max-w-3xl overflow-wrap-anywhere text-base leading-8 text-muted sm:text-lg sm:leading-9">{description}</p>
         {shouldClamp && (
           <button
             type="button"
@@ -78,13 +86,13 @@ export default function PropertyOverview({ property }) {
 
 function Fact({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-ink/10 bg-ivory/70 p-4">
-      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-night text-gold">
+    <div className="flex h-full min-h-[112px] min-w-0 items-center gap-3 rounded-lg border border-ink/10 bg-ivory/75 p-3 sm:p-4">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-night text-gold sm:h-12 sm:w-12">
         <Icon aria-hidden="true" />
       </span>
-      <span>
-        <span className="block text-xs font-bold uppercase tracking-[0.14em] text-muted">{label}</span>
-        <span className="mt-1 block font-bold text-ink">{value}</span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[10px] font-bold uppercase leading-4 tracking-[0.08em] text-muted sm:text-[11px] sm:tracking-[0.1em]">{label}</span>
+        <span className="mt-1 block break-words text-sm font-bold leading-5 text-ink sm:text-base">{value}</span>
       </span>
     </div>
   );

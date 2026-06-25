@@ -96,16 +96,21 @@ export default function LocationsSection() {
           </p>
         </motion.div>
 
-        <motion.div className="w-full max-w-full overflow-hidden px-1 pb-2 sm:px-2 lg:hidden" variants={sectionVariants}>
+        <motion.div className="w-full max-w-full overflow-x-hidden overflow-y-visible px-1 pb-2 sm:px-2 lg:hidden" variants={sectionVariants}>
           <Swiper
             modules={[Autoplay]}
-            slidesPerView={1.2}
+            slidesPerView={1}
             spaceBetween={16}
-            centeredSlides
+            centeredSlides={false}
             loop
             speed={900}
-            autoplay={{ delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            autoplay={{ delay: 2500, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            className="hover-lift-swiper !px-0 !pb-1 !pt-4"
             breakpoints={{
+              414: {
+                slidesPerView: 1.08,
+                spaceBetween: 16,
+              },
               768: {
                 slidesPerView: 2,
                 spaceBetween: 20,
@@ -114,14 +119,14 @@ export default function LocationsSection() {
             }}
           >
             {locationCards.map((location) => (
-              <SwiperSlide key={location.city} className="flex h-auto">
+              <SwiperSlide key={location.city} className="flex !h-auto">
                 <LocationCard location={location} compact />
               </SwiperSlide>
             ))}
           </Swiper>
         </motion.div>
 
-        <motion.div className="hidden gap-6 lg:grid lg:grid-cols-2 xl:grid-cols-4" variants={sectionVariants}>
+        <motion.div className="-mt-3 hidden gap-6 pt-3 lg:grid lg:grid-cols-2 xl:grid-cols-4" variants={sectionVariants}>
           {locationCards.map((location) => (
             <LocationCard key={location.city} location={location} />
           ))}
@@ -136,7 +141,7 @@ function LocationCard({ location, compact = false }) {
     <motion.article
       variants={cardVariants}
       whileHover={{ y: -10 }}
-      className={`group relative h-full w-full overflow-hidden rounded-2xl border border-white/25 bg-night shadow-soft transition-shadow hover:shadow-premium ${
+      className={`group relative h-full w-full min-w-0 overflow-hidden rounded-2xl border border-white/25 bg-night shadow-soft transition-shadow will-change-transform hover:shadow-premium ${
         compact ? 'min-h-[340px]' : 'min-h-[390px]'
       }`}
     >

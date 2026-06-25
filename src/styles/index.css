@@ -11,16 +11,51 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 html {
   scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
-  min-width: 320px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-x: clip;
   font-family: Inter, sans-serif;
+}
+
+#root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }
 
 button,
@@ -29,9 +64,78 @@ select {
   -webkit-tap-highlight-color: transparent;
 }
 
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .container-p4 {
   width: min(1180px, calc(100% - 32px));
+  max-width: 100%;
   margin-inline: auto;
+}
+
+.property-detail-container {
+  width: min(1400px, calc(100% - 32px));
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+@media (min-width: 640px) {
+  .property-detail-container {
+    width: min(1400px, calc(100% - 48px));
+  }
+}
+
+.swiper {
+  max-width: 100%;
+}
+
+.hover-lift-swiper {
+  overflow-y: visible !important;
+}
+
+.hover-lift-swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+.hover-lift-swiper .swiper-slide {
+  height: auto;
+}
+
+.property-gallery .swiper-button-prev,
+.property-gallery .swiper-button-next {
+  color: #d4af37;
+}
+
+.property-gallery,
+.property-gallery .swiper,
+.property-gallery .swiper-wrapper,
+.property-gallery .swiper-slide {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.property-main-swiper .swiper-slide {
+  width: 100% !important;
+  overflow: hidden;
+}
+
+.property-thumb-swiper {
+  overflow: hidden !important;
+}
+
+.property-gallery .swiper-button-prev::after,
+.property-gallery .swiper-button-next::after {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+@media (max-width: 639px) {
+  .property-gallery .swiper-button-prev,
+  .property-gallery .swiper-button-next {
+    display: none;
+  }
 }
 
 .swiper-pagination-bullet {

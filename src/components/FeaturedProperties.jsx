@@ -98,8 +98,13 @@ export default function FeaturedProperties() {
           />
         ) : (
           <>
-          <motion.div className="lg:hidden" variants={sectionVariants}>
-            <Swiper slidesPerView={1.1} spaceBetween={16} aria-label="Featured properties slider">
+          <motion.div className="max-w-full overflow-hidden lg:hidden" variants={sectionVariants}>
+            <Swiper
+              slidesPerView={1}
+              spaceBetween={16}
+              breakpoints={{ 414: { slidesPerView: 1.08, spaceBetween: 16 } }}
+              aria-label="Featured properties slider"
+            >
               {properties.map((property) => (
                 <SwiperSlide key={property._id} className="h-auto">
                   <FeaturedPropertyCard property={property} />
@@ -182,7 +187,7 @@ function FeaturedSkeleton() {
       {Array.from({ length: 6 }).map((_, index) => (
         <div
           key={index}
-          className="w-[85vw] min-w-[85vw] max-w-[85vw] snap-start animate-pulse overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl lg:w-auto lg:min-w-0 lg:max-w-none"
+          className="basis-[85%] shrink-0 snap-start animate-pulse overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:basis-[62%] lg:basis-auto lg:shrink"
         >
           <div className="aspect-[4/3] bg-white/15" />
           <div className="space-y-4 p-6">

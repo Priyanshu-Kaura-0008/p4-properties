@@ -69,7 +69,7 @@ export default function PropertyDetailsPage() {
 
   return (
     <motion.main
-      className="bg-white pb-24 text-ink xl:pb-0"
+      className="w-full max-w-full overflow-x-hidden bg-white pb-24 text-ink xl:pb-0"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.35 }}
@@ -92,9 +92,9 @@ export default function PropertyDetailsPage() {
       <Navbar />
       <PropertyGallery property={property} />
 
-      <section className="bg-ivory py-12 md:py-16">
-        <div className="container-p4 grid gap-8 xl:grid-cols-[1fr_360px]">
-          <div className="grid gap-8">
+      <section className="bg-ivory py-10 md:py-14 xl:py-16">
+        <div className="property-detail-container grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:gap-9 2xl:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="grid min-w-0 gap-6 md:gap-8">
             <PropertyOverview property={property} />
             <PropertyAmenities amenities={property.amenities} />
             <PropertyFloorPlans property={property} />
@@ -104,7 +104,7 @@ export default function PropertyDetailsPage() {
             </div>
             <ScheduleVisit property={property} />
           </div>
-          <div className="hidden xl:block">
+          <div className="hidden min-w-0 xl:block">
             <PropertySidebar property={property} />
           </div>
         </div>
@@ -112,9 +112,9 @@ export default function PropertyDetailsPage() {
 
       <RelatedProperties properties={related} />
 
-      <section className="bg-night py-16 md:py-24">
+      <section className="bg-night py-14 md:py-20">
         <motion.div
-          className="container-p4 text-center"
+          className="property-detail-container text-center"
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.35 }}
@@ -127,16 +127,16 @@ export default function PropertyDetailsPage() {
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-white/72 md:text-lg">
             Our experts are here to guide you through every step of the buying journey.
           </p>
-          <div className="mt-9 flex flex-col justify-center gap-4 sm:flex-row">
+          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
             <a
               href="/site-visit"
-              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-gold px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-night transition-colors hover:bg-white"
+              className="inline-flex min-h-12 items-center justify-center rounded-lg bg-gold px-6 py-4 text-center text-xs font-extrabold uppercase tracking-[0.1em] text-night transition-colors hover:bg-white sm:px-7 sm:text-sm sm:tracking-[0.14em]"
             >
               Schedule Site Visit
             </a>
             <a
               href="#inquiry"
-              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/40 px-7 py-4 text-sm font-extrabold uppercase tracking-[0.16em] text-white transition-colors hover:border-gold hover:text-gold"
+              className="inline-flex min-h-12 items-center justify-center rounded-lg border border-white/40 px-6 py-4 text-center text-xs font-extrabold uppercase tracking-[0.1em] text-white transition-colors hover:border-gold hover:text-gold sm:px-7 sm:text-sm sm:tracking-[0.14em]"
             >
               Send Inquiry
             </a>
@@ -146,7 +146,9 @@ export default function PropertyDetailsPage() {
 
       <Footer />
       <MobilePropertyCta property={property} />
-      <FloatingActions />
+      <div className="hidden xl:block">
+        <FloatingActions />
+      </div>
     </motion.main>
   );
 }
@@ -155,11 +157,24 @@ function MobilePropertyCta({ property }) {
   const message = encodeURIComponent(`I am interested in ${property.title}. Please share details.`);
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-[95] border-t border-ink/10 bg-white/95 px-3 py-3 shadow-[0_-18px_45px_rgba(17,17,17,0.16)] backdrop-blur-xl xl:hidden">
-      <div className="mx-auto grid max-w-md grid-cols-3 gap-2">
+    <div className="fixed inset-x-0 bottom-0 z-[95] border-t border-ink/10 bg-white/95 px-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-18px_45px_rgba(17,17,17,0.16)] backdrop-blur-xl xl:hidden">
+      <div className="mx-auto grid max-w-md grid-cols-4 gap-1.5">
+        <a
+          href="#inquiry"
+          className="inline-flex min-h-12 min-w-0 flex-col items-center justify-center rounded-lg bg-gold px-1.5 py-2 text-center text-[10px] font-extrabold uppercase leading-tight tracking-[0.04em] text-night"
+        >
+          Inquiry
+        </a>
+        <a
+          href="#site-visit"
+          className="inline-flex min-h-12 min-w-0 flex-col items-center justify-center rounded-lg border border-ink/15 bg-white px-1.5 py-2 text-center text-[10px] font-extrabold uppercase leading-tight tracking-[0.04em] text-ink"
+        >
+          <FaCalendarCheck className="mb-1 text-gold" aria-hidden="true" />
+          Visit
+        </a>
         <a
           href={CONTACT_LINKS.phone}
-          className="inline-flex min-h-12 flex-col items-center justify-center rounded-xl bg-night px-2 py-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-white"
+          className="inline-flex min-h-12 min-w-0 flex-col items-center justify-center rounded-lg bg-night px-1.5 py-2 text-center text-[10px] font-extrabold uppercase leading-tight tracking-[0.04em] text-white"
         >
           <FaPhoneAlt className="mb-1" aria-hidden="true" />
           Call
@@ -168,18 +183,11 @@ function MobilePropertyCta({ property }) {
           href={`https://wa.me/${COMPANY_INFO.whatsapp}?text=${message}`}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex min-h-12 flex-col items-center justify-center rounded-xl border border-ink/15 bg-white px-2 py-2 text-[11px] font-extrabold uppercase tracking-[0.08em] text-ink"
+          className="inline-flex min-h-12 min-w-0 flex-col items-center justify-center rounded-lg border border-ink/15 bg-white px-1.5 py-2 text-center text-[10px] font-extrabold uppercase leading-tight tracking-[0.04em] text-ink"
         >
           <FaWhatsapp className="mb-1 text-gold" aria-hidden="true" />
           WhatsApp
         </a>
-        <Link
-          to="/site-visit"
-          className="inline-flex min-h-12 flex-col items-center justify-center rounded-xl bg-gold px-2 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-night"
-        >
-          <FaCalendarCheck className="mb-1" aria-hidden="true" />
-          Site Visit
-        </Link>
       </div>
     </div>
   );
@@ -187,13 +195,13 @@ function MobilePropertyCta({ property }) {
 
 function PropertyDetailsSkeleton() {
   return (
-    <main className="bg-ivory text-ink">
+    <main className="w-full max-w-full overflow-x-hidden bg-ivory text-ink">
       <Navbar />
       <section className="pt-20">
         <div className="h-[68vh] min-h-[430px] animate-pulse bg-ink/10" />
       </section>
-      <section className="container-p4 grid gap-8 py-16 xl:grid-cols-[1fr_360px]" aria-label="Loading property details">
-        <div className="grid gap-6">
+      <section className="property-detail-container grid min-w-0 gap-8 py-16 xl:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_360px]" aria-label="Loading property details">
+        <div className="grid min-w-0 gap-6">
           <div className="h-44 animate-pulse rounded-2xl bg-white" />
           <div className="h-28 animate-pulse rounded-2xl bg-white" />
           <div className="h-72 animate-pulse rounded-2xl bg-white" />
@@ -207,7 +215,7 @@ function PropertyDetailsSkeleton() {
 
 function PropertyNotFound({ message }) {
   return (
-    <main className="bg-white text-ink">
+    <main className="w-full max-w-full overflow-x-hidden bg-white text-ink">
       <Navbar />
       <section className="relative flex min-h-[75vh] items-center overflow-hidden bg-night pt-24 text-center">
         <img
@@ -217,7 +225,7 @@ function PropertyNotFound({ message }) {
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover opacity-35"
         />
-        <div className="container-p4 relative z-10">
+        <div className="property-detail-container relative z-10">
           <p className="mb-4 text-xs font-bold uppercase tracking-[0.28em] text-gold">Property Unavailable</p>
           <h1 className="font-display text-4xl font-bold text-white sm:text-5xl md:text-7xl">This Listing Could Not Be Found</h1>
           <p className="mx-auto mt-5 max-w-2xl leading-8 text-white/72">

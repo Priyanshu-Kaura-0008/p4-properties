@@ -4,19 +4,19 @@ import { FaCheckCircle } from 'react-icons/fa';
 export default function PropertyAmenities({ amenities = [] }) {
   return (
     <motion.section
-      className="rounded-2xl border border-ink/10 bg-white/85 p-7 shadow-soft backdrop-blur-xl"
+      className="rounded-lg border border-ink/10 bg-white/90 p-5 shadow-soft backdrop-blur-xl sm:p-7 lg:p-8"
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.6 }}
     >
-      <h2 className="font-display text-3xl font-bold text-ink">Amenities</h2>
+      <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">Amenities</h2>
       {amenities.length ? (
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
           {amenities.map((amenity) => (
-            <div key={amenity} className="flex items-center gap-4 rounded-xl border border-gold/25 bg-ivory/70 p-5">
-              <FaCheckCircle className="text-gold" aria-hidden="true" />
-              <p className="font-bold text-ink">{amenity}</p>
+            <div key={amenity} className="flex min-h-16 min-w-0 items-start gap-3 rounded-lg border border-gold/25 bg-ivory/75 p-4">
+              <FaCheckCircle className="shrink-0 text-gold" aria-hidden="true" />
+              <p className="overflow-wrap-anywhere font-bold leading-6 text-ink">{amenity}</p>
             </div>
           ))}
         </div>

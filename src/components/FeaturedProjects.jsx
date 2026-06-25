@@ -32,11 +32,11 @@ export default function FeaturedProjects() {
           title="Exclusive Investment Opportunities"
           subtitle="Premium developments selected for location quality, product depth, and long-term value."
         />
-        <div className="-mx-4 flex snap-x gap-5 overflow-x-auto px-4 pb-2 lg:mx-0 lg:grid lg:gap-7 lg:overflow-visible lg:px-0 lg:pb-0 lg:grid-cols-3">
+        <div className="flex snap-x gap-5 overflow-x-auto pb-2 lg:grid lg:gap-7 lg:overflow-visible lg:pb-0 lg:grid-cols-3">
           {projects.map((project) => (
             <motion.article
               key={project._id}
-              className="group min-w-[86%] snap-start overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-soft transition-all hover:-translate-y-2 hover:border-gold/60 hover:shadow-premium sm:min-w-[62%] lg:min-w-0"
+              className="group basis-[86%] shrink-0 snap-start overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-soft transition-all hover:-translate-y-2 hover:border-gold/60 hover:shadow-premium sm:basis-[62%] lg:basis-auto lg:shrink"
               initial={{ opacity: 0, y: 22 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
